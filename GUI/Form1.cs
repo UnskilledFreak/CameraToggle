@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using CameraPlusExternalMover;
+using Mover;
 
 namespace GUI
 {
@@ -9,7 +9,7 @@ namespace GUI
     {
         private readonly Random _random = new Random();
         private ILogger _logger;
-        private Mover _mover;
+        private Factory _factory;
         
         public Form1()
         {
@@ -21,7 +21,7 @@ namespace GUI
             _logger = new TextLogger(textBox1);
             _logger.Log("Loaded GUI");
             
-            _mover = new Mover(_logger);
+            _factory = new Factory(_logger);
             
             MaximumSize = Size;
             MinimumSize = Size;
@@ -49,15 +49,15 @@ namespace GUI
 
         private void WriteCommand(string command)
         {
-            var fileName = $@"{Mover.DirectoryName}\commands_{_random.Next(1000)}.txt";
+            var fileName = $@"{Factory.DirectoryName}\commands_{_random.Next(1000)}.txt";
             File.WriteAllText(fileName, command);
             _logger.Log($"wrote \"{command}\" to {fileName}");
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            _mover.Destroy();
-            _mover = new Mover(_logger);
+            _factory.Destroy();
+            _factory = new Factory(_logger);
         }
     }
 }

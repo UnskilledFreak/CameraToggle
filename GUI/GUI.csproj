@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CameraPlusExternalMover\CameraPlusExternalMover.csproj" />
+      <ProjectReference Include="..\Mover\Mover.csproj" />
     </ItemGroup>
 
 </Project>

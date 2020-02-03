@@ -1,19 +1,19 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace CameraPlusExternalMover
+namespace Mover
 {
-    public class Mover
+    public class Factory
     {
         public const string DirectoryName = "commands";
         private readonly FileSystemWatcher _watcher;
         private readonly List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
         private readonly ILogger _logger;
 
-        public Mover(ILogger logger)
+        public Factory(ILogger logger)
         {
             _logger = logger;
             

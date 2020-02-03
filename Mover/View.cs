@@ -1,4 +1,4 @@
-namespace CameraPlusExternalMover
+namespace Mover
 {
     public enum View
     {
