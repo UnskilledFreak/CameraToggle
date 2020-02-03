@@ -6,9 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Update="beatsaberpath.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <None Update="start.bat">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
