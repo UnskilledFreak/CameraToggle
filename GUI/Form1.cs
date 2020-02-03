@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Mover;
@@ -9,7 +10,7 @@ namespace GUI
     {
         private readonly Random _random = new Random();
         private ILogger _logger;
-        private Factory _factory;
+        private Factory _mover;
         
         public Form1()
         {
@@ -21,7 +22,7 @@ namespace GUI
             _logger = new TextLogger(textBox1);
             _logger.Log("Loaded GUI");
             
-            _factory = new Factory(_logger);
+            _mover = new Factory(_logger);
             
             MaximumSize = Size;
             MinimumSize = Size;
@@ -29,22 +30,22 @@ namespace GUI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            WriteCommand("Restore");
+            WriteCommand(Factory.CommandRestore);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            WriteCommand("Front");
+            WriteCommand(Factory.CommandFront);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            WriteCommand("FirstPerson");
+            WriteCommand(Factory.CommandFirstPerson);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            WriteCommand("FirstPersonSmallCams");
+            WriteCommand(Factory.CommandFirstPersonSmallCams);
         }
 
         private void WriteCommand(string command)
@@ -56,8 +57,27 @@ namespace GUI
 
         private void button5_Click(object sender, EventArgs e)
         {
-            _factory.Destroy();
-            _factory = new Factory(_logger);
+            _mover.Destroy();
+            _mover = new Factory(_logger);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            WriteCommand(Factory.CommandToggle360);
+        }
+
+        private void Button6Behavior()
+        {
+            if (_mover.AreCamsIn360())
+            {
+                button6.BackColor = Color.Chartreuse;
+                button6.Text = "Disable 360";
+            }
+            else
+            {
+                button6.BackColor = Color.Crimson;
+                button6.Text = "Enable 360";
+            }
         }
     }
 }

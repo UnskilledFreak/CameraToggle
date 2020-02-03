@@ -9,6 +9,14 @@ namespace Mover
     public class Factory
     {
         public const string DirectoryName = "commands";
+
+        public const string CommandBack = "Back";
+        public const string CommandFront = "Front";
+        public const string CommandRestore = "Restore";
+        public const string CommandFirstPerson = "FirstPerson";
+        public const string CommandFirstPersonSmallCams = "FirstPersonSmallCams";
+        public const string CommandToggle360 = "Toggle360";
+        
         private readonly FileSystemWatcher _watcher;
         private readonly List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
         private readonly ILogger _logger;
@@ -141,30 +149,54 @@ namespace Mover
             _logger.Log($"invoking \"{command}\"");
             switch (command)
             {
-                case "FirstPerson":
+                case CommandFirstPerson:
                     ToggleFirstPerson();
                     break;
 
-                case "FirstPersonSmallCams":
+                case CommandFirstPersonSmallCams:
                     ToggleFirstPerson();
                     SetCamDimensions(GetFromView(View.FirstPerson), GetFromView(View.Front));
                     break;
 
-                case "Front":
+                case CommandFront:
                     ToggleFront();
                     break;
 
-                case "Back":
-                case "Restore":
+                case CommandBack:
+                case CommandRestore:
                     //RestoreAllCams();
                     break;
 
+                case CommandToggle360:
+                    var front = GetFromView(View.Front);
+                    var back = GetFromView(View.Back);
+                    var state = !AreCamsIn360(front, back); 
+                    
+                    front.Use360Camera = state;
+                    back.Use360Camera = state;
+                    break;
+                
                 default:
                     _logger.Log($"unrecognised command: {command}");
                     return;
             }
 
             SaveAllCams();
+        }
+
+        public bool AreCamsIn360(CameraPlusConfig front = null, CameraPlusConfig back = null)
+        {
+            if (front == null)
+            {
+                front = GetFromView(View.Front);
+            }
+
+            if (back == null)
+            {
+                back = GetFromView(View.Back);
+            }
+
+            return front.Use360Camera == back.Use360Camera && front.Use360Camera;
         }
 
         private void SetCamDimensions(CameraPlusConfig config1, CameraPlusConfig config2)
