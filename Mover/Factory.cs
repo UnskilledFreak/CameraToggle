@@ -16,15 +16,20 @@ namespace Mover
         public const string CommandFirstPerson = "FirstPerson";
         public const string CommandFirstPersonSmallCams = "FirstPersonSmallCams";
         public const string CommandToggle360 = "Toggle360";
-        
-        private readonly FileSystemWatcher _watcher;
-        private readonly List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
-        private readonly ILogger _logger;
+
+        private FileSystemWatcher _watcher;
+        private List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
+        private ILogger _logger;
+
+        private string _beatSaberDirectory;
+
+        public bool IsLoaded { get; private set; }
+        public Action Callback360Toggle;
 
         public Factory(ILogger logger)
         {
             _logger = logger;
-            
+
             _logger.Log("Initializing...");
 
             // create command directory if not exists
@@ -38,47 +43,17 @@ namespace Mover
             {
                 File.Delete(file);
             }
-
-            // read directory file and check if everything is right
-            _logger.Log("Checking Beat Saber Data...");
-            var beatSaberDirectory = File.ReadAllText("beatsaberpath.txt");
-            _logger.Log(beatSaberDirectory);
-            if (!Directory.Exists(beatSaberDirectory))
-            {
-                throw new DirectoryNotFoundException(beatSaberDirectory);
-            }
             
-            _logger.Log($"Beat Saber is installed to: {beatSaberDirectory}");
-
-            beatSaberDirectory += "/UserData/CameraPlus/";
-            if (!Directory.Exists(beatSaberDirectory))
-            {
-                throw new DirectoryNotFoundException(beatSaberDirectory);
-            }
-            
-            _logger.Log($"camera path: {beatSaberDirectory}");
-
-            // load cameras
-            _logger.Log("Loading Cameras...");
-            _cameras.Add(CameraPlusConfig.FromFile(beatSaberDirectory + "cameraplus.cfg", View.Back, _logger));
-            _cameras.Add(CameraPlusConfig.FromFile(beatSaberDirectory + "customcamera1.cfg", View.FirstPerson, _logger));
-            _cameras.Add(CameraPlusConfig.FromFile(beatSaberDirectory + "customcamera2.cfg", View.Front, _logger));
-            
-            _logger.Log($"loaded {_cameras.Count} cameras");
-
-            // create a watcher
-            _watcher = new FileSystemWatcher(DirectoryName)
-            {
-                IncludeSubdirectories = false,
-                EnableRaisingEvents = true,
-                //NotifyFilter = NotifyFilters.LastWrite
-            };
-            _watcher.Created += FileCreatedEvent;
-            _watcher.Error += (sender, args) => { _logger.Log("could not watch directory!"); };
-
-            _logger.Log("done, go ahead :3");
-            _logger.Log("-----------------");
+            SetBeatSaberPath(File.ReadAllText("beatsaberpath.txt"));
         }
+
+        public void SetBeatSaberPath(string path)
+        {
+            _beatSaberDirectory = path;
+            LoadData();
+        }
+
+        public string GetBeatSaberPath() => _beatSaberDirectory;
 
         public void Destroy()
         {
@@ -87,12 +62,93 @@ namespace Mover
             {
                 config.Destroy();
             }
-            _watcher.Created -= FileCreatedEvent;
+
+            if (_watcher != null)
+            {
+                _watcher.Created -= FileCreatedEvent;   
+            }
+            
+            _logger.Log("done");
+        }
+
+        public bool AreCamsIn360(CameraPlusConfig front = null, CameraPlusConfig back = null)
+        {
+            if (front == null)
+            {
+                front = GetFromView(View.Front);
+            }
+
+            if (back == null)
+            {
+                back = GetFromView(View.Back);
+            }
+
+            return front.Use360Camera == back.Use360Camera && front.Use360Camera;
+        }
+        
+        private void LoadData()
+        {
+            try
+            {
+                _cameras.Clear();
+                Destroy();
+                
+                // read directory file and check if everything is right
+                _logger.Log("Checking Beat Saber Data...");
+                _logger.Log(_beatSaberDirectory);
+                if (!Directory.Exists(_beatSaberDirectory))
+                {
+                    throw new DirectoryNotFoundException(_beatSaberDirectory);
+                }
+
+                _logger.Log($"Beat Saber is installed to: {_beatSaberDirectory}");
+
+                var beatSaberDirectory = _beatSaberDirectory + "/UserData/CameraPlus/";
+                if (!Directory.Exists(beatSaberDirectory))
+                {
+                    throw new DirectoryNotFoundException(beatSaberDirectory);
+                }
+
+                _logger.Log($"camera path: {beatSaberDirectory}");
+
+                // load cameras
+                _logger.Log("Loading Cameras...");
+                _cameras.Add(CameraPlusConfig.FromFile(beatSaberDirectory + "cameraplus.cfg", View.Back, _logger));
+                _cameras.Add(CameraPlusConfig.FromFile(beatSaberDirectory + "customcamera1.cfg", View.FirstPerson, _logger));
+                _cameras.Add(CameraPlusConfig.FromFile(beatSaberDirectory + "customcamera2.cfg", View.Front, _logger));
+
+                _logger.Log($"loaded {_cameras.Count} cameras");
+
+                // create a watcher
+                _watcher = new FileSystemWatcher(DirectoryName)
+                {
+                    IncludeSubdirectories = false,
+                    EnableRaisingEvents = true,
+                    //NotifyFilter = NotifyFilters.LastWrite
+                };
+                _watcher.Created += FileCreatedEvent;
+                _watcher.Error += (sender, args) =>
+                {
+                    _logger.Log("could not watch directory!");
+                };
+
+                _logger.Log("done, go ahead :3");
+                _logger.Log("-----------------");
+
+                IsLoaded = true;
+                File.WriteAllText("beatsaberpath.txt", _beatSaberDirectory);
+            }
+            catch (Exception e)
+            {
+                IsLoaded = false;
+                _logger.LogException(e);
+                _logger.Log("disabled mover...");
+            }
         }
 
         private void FileCreatedEvent(object sender, FileSystemEventArgs args)
         {
-            // can we access it? if not wait a few msec
+            // can we access it? if not wait a few m sec
             while (IsFileLocked(args.FullPath))
             {
                 Thread.Sleep(200);
@@ -135,7 +191,13 @@ namespace Mover
 
         private void ParseCommands(string commandString)
         {
-            _logger.Log($"recieved command: {commandString}");
+            if (!IsLoaded)
+            {
+                _logger.Log($"NOT LOADED! ignoring command {commandString}");
+                return;
+            }
+            
+            _logger.Log($"received command: {commandString}");
 
             var parsing = commandString.Split(' ');
             if (parsing.Length < 1)
@@ -144,8 +206,9 @@ namespace Mover
                 return;
             }
 
-            var command = parsing[0].Trim();
             RestoreAllCams();
+            
+            var command = parsing[0].Trim();
             _logger.Log($"invoking \"{command}\"");
             switch (command)
             {
@@ -170,33 +233,24 @@ namespace Mover
                 case CommandToggle360:
                     var front = GetFromView(View.Front);
                     var back = GetFromView(View.Back);
-                    var state = !AreCamsIn360(front, back); 
-                    
+                    var state = !AreCamsIn360(front, back);
+
                     front.Use360Camera = state;
                     back.Use360Camera = state;
+                    
                     break;
-                
+
                 default:
                     _logger.Log($"unrecognised command: {command}");
                     return;
             }
 
             SaveAllCams();
-        }
 
-        public bool AreCamsIn360(CameraPlusConfig front = null, CameraPlusConfig back = null)
-        {
-            if (front == null)
+            if (command == CommandToggle360)
             {
-                front = GetFromView(View.Front);
+                Callback360Toggle?.Invoke();
             }
-
-            if (back == null)
-            {
-                back = GetFromView(View.Back);
-            }
-
-            return front.Use360Camera == back.Use360Camera && front.Use360Camera;
         }
 
         private void SetCamDimensions(CameraPlusConfig config1, CameraPlusConfig config2)
@@ -241,6 +295,7 @@ namespace Mover
 
         private void SaveAllCams()
         {
+            _logger.Log("saving cams");
             foreach (var camera in _cameras)
             {
                 camera.Save();
@@ -255,8 +310,8 @@ namespace Mover
                 return;
             }
             */
-            
-            
+
+
             var tmpTransparentWalls = fromCam.TransparentWalls;
             fromCam.TransparentWalls = toCam.TransparentWalls;
             toCam.TransparentWalls = tmpTransparentWalls;
@@ -265,71 +320,71 @@ namespace Mover
             if (fromCam.Use360Camera)
             {
             */
-                // swap 360 settings
-                var tmpCam360Smoothness = fromCam.Cam360Smoothness;
-                var tmpUse360Camera = fromCam.Use360Camera;
-                var tmpCam360ForwardOffset = fromCam.Cam360ForwardOffset;
-                var tmpCam360XTilt = fromCam.Cam360XTilt;
-                var tmpCam360ZTilt = fromCam.Cam360ZTilt;
-                var tmpCam360YTilt = fromCam.Cam360YTilt;
-                var tmpCam360UpOffset = fromCam.Cam360UpOffset;
-                var tmpCam360RightOffset = fromCam.Cam360RightOffset;
+            // swap 360 settings
+            var tmpCam360Smoothness = fromCam.Cam360Smoothness;
+            var tmpUse360Camera = fromCam.Use360Camera;
+            var tmpCam360ForwardOffset = fromCam.Cam360ForwardOffset;
+            var tmpCam360XTilt = fromCam.Cam360XTilt;
+            var tmpCam360ZTilt = fromCam.Cam360ZTilt;
+            var tmpCam360YTilt = fromCam.Cam360YTilt;
+            var tmpCam360UpOffset = fromCam.Cam360UpOffset;
+            var tmpCam360RightOffset = fromCam.Cam360RightOffset;
 
-                fromCam.Cam360Smoothness = toCam.Cam360Smoothness;
-                fromCam.Use360Camera = toCam.Use360Camera;
-                fromCam.Cam360ForwardOffset = toCam.Cam360ForwardOffset;
-                fromCam.Cam360XTilt = toCam.Cam360XTilt;
-                fromCam.Cam360ZTilt = toCam.Cam360ZTilt;
-                fromCam.Cam360YTilt = toCam.Cam360YTilt;
-                fromCam.Cam360UpOffset = toCam.Cam360UpOffset;
-                fromCam.Cam360RightOffset = toCam.Cam360RightOffset;
+            fromCam.Cam360Smoothness = toCam.Cam360Smoothness;
+            fromCam.Use360Camera = toCam.Use360Camera;
+            fromCam.Cam360ForwardOffset = toCam.Cam360ForwardOffset;
+            fromCam.Cam360XTilt = toCam.Cam360XTilt;
+            fromCam.Cam360ZTilt = toCam.Cam360ZTilt;
+            fromCam.Cam360YTilt = toCam.Cam360YTilt;
+            fromCam.Cam360UpOffset = toCam.Cam360UpOffset;
+            fromCam.Cam360RightOffset = toCam.Cam360RightOffset;
 
-                toCam.Cam360Smoothness = tmpCam360Smoothness;
-                toCam.Use360Camera = tmpUse360Camera;
-                toCam.Cam360ForwardOffset = tmpCam360ForwardOffset;
-                toCam.Cam360XTilt = tmpCam360XTilt;
-                toCam.Cam360ZTilt = tmpCam360ZTilt;
-                toCam.Cam360YTilt = tmpCam360YTilt;
-                toCam.Cam360UpOffset = tmpCam360UpOffset;
-                toCam.Cam360RightOffset = tmpCam360RightOffset;
-                /*
-            }
-            else
-            {
-            */
-                // swap global position
-                var tmpPositionSmooth = fromCam.PositionSmooth;
-                var tmpRotationSmooth = fromCam.RotationSmooth;
-                var tmpThirdPerson = fromCam.ThirdPerson;
-                var tmpShowThirdPersonCamera = fromCam.ShowThirdPersonCamera;
-                var tmpPosX = fromCam.Posx;
-                var tmpPosY = fromCam.Posy;
-                var tmpPosZ = fromCam.Posz;
-                var tmpAngX = fromCam.Angx;
-                var tmpAngY = fromCam.Angy;
-                var tmpAngZ = fromCam.Angz;
+            toCam.Cam360Smoothness = tmpCam360Smoothness;
+            toCam.Use360Camera = tmpUse360Camera;
+            toCam.Cam360ForwardOffset = tmpCam360ForwardOffset;
+            toCam.Cam360XTilt = tmpCam360XTilt;
+            toCam.Cam360ZTilt = tmpCam360ZTilt;
+            toCam.Cam360YTilt = tmpCam360YTilt;
+            toCam.Cam360UpOffset = tmpCam360UpOffset;
+            toCam.Cam360RightOffset = tmpCam360RightOffset;
+            /*
+        }
+        else
+        {
+        */
+            // swap global position
+            var tmpPositionSmooth = fromCam.PositionSmooth;
+            var tmpRotationSmooth = fromCam.RotationSmooth;
+            var tmpThirdPerson = fromCam.ThirdPerson;
+            var tmpShowThirdPersonCamera = fromCam.ShowThirdPersonCamera;
+            var tmpPosX = fromCam.PosX;
+            var tmpPosY = fromCam.PosY;
+            var tmpPosZ = fromCam.PosZ;
+            var tmpAngX = fromCam.AngX;
+            var tmpAngY = fromCam.AngY;
+            var tmpAngZ = fromCam.AngZ;
 
-                fromCam.PositionSmooth = toCam.PositionSmooth;
-                fromCam.RotationSmooth = toCam.RotationSmooth;
-                fromCam.ThirdPerson = toCam.ThirdPerson;
-                fromCam.ShowThirdPersonCamera = toCam.ShowThirdPersonCamera;
-                fromCam.Posx = toCam.Posx;
-                fromCam.Posy = toCam.Posy;
-                fromCam.Posz = toCam.Posz;
-                fromCam.Angx = toCam.Angx;
-                fromCam.Angy = toCam.Angy;
-                fromCam.Angz = toCam.Angz;
+            fromCam.PositionSmooth = toCam.PositionSmooth;
+            fromCam.RotationSmooth = toCam.RotationSmooth;
+            fromCam.ThirdPerson = toCam.ThirdPerson;
+            fromCam.ShowThirdPersonCamera = toCam.ShowThirdPersonCamera;
+            fromCam.PosX = toCam.PosX;
+            fromCam.PosY = toCam.PosY;
+            fromCam.PosZ = toCam.PosZ;
+            fromCam.AngX = toCam.AngX;
+            fromCam.AngY = toCam.AngY;
+            fromCam.AngZ = toCam.AngZ;
 
-                toCam.PositionSmooth = tmpPositionSmooth;
-                toCam.RotationSmooth = tmpRotationSmooth;
-                toCam.ThirdPerson = tmpThirdPerson;
-                toCam.ShowThirdPersonCamera = tmpShowThirdPersonCamera;
-                toCam.Posx = tmpPosX;
-                toCam.Posy = tmpPosY;
-                toCam.Posz = tmpPosZ;
-                toCam.Angx = tmpAngX;
-                toCam.Angy = tmpAngY;
-                toCam.Angz = tmpAngZ;
+            toCam.PositionSmooth = tmpPositionSmooth;
+            toCam.RotationSmooth = tmpRotationSmooth;
+            toCam.ThirdPerson = tmpThirdPerson;
+            toCam.ShowThirdPersonCamera = tmpShowThirdPersonCamera;
+            toCam.PosX = tmpPosX;
+            toCam.PosY = tmpPosY;
+            toCam.PosZ = tmpPosZ;
+            toCam.AngX = tmpAngX;
+            toCam.AngY = tmpAngY;
+            toCam.AngZ = tmpAngZ;
             //}
         }
 

@@ -8,10 +8,12 @@ namespace GUI
 {
     public partial class Form1 : Form
     {
+        private delegate void SafeCallDelegate(string text, Color color);
+
         private readonly Random _random = new Random();
         private ILogger _logger;
         private Factory _mover;
-        
+
         public Form1()
         {
             InitializeComponent();
@@ -21,11 +23,31 @@ namespace GUI
         {
             _logger = new TextLogger(textBox1);
             _logger.Log("Loaded GUI");
-            
-            _mover = new Factory(_logger);
-            
+
+            _mover = new Factory(_logger)
+            {
+                Callback360Toggle = Button6Behavior
+            };
+            textBox2.Text = _mover.GetBeatSaberPath();
+
             MaximumSize = Size;
             MinimumSize = Size;
+
+            UpdateGui();
+        }
+
+        private void UpdateGui()
+        {
+            var state = _mover.IsLoaded;
+
+            button1.Enabled = state;
+            button2.Enabled = state;
+            button3.Enabled = state;
+            button4.Enabled = state;
+            button5.Enabled = state;
+            button6.Enabled = state;
+
+            Button6Behavior();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -70,14 +92,31 @@ namespace GUI
         {
             if (_mover.AreCamsIn360())
             {
-                button6.BackColor = Color.Chartreuse;
-                button6.Text = "Disable 360";
+                SafeButtonBehavior("Disable", Color.Chartreuse);
             }
             else
             {
-                button6.BackColor = Color.Crimson;
-                button6.Text = "Enable 360";
+                SafeButtonBehavior("Enable", Color.Crimson);
             }
+        }
+
+        private void SafeButtonBehavior(string text, Color color)
+        {
+            if (button6.InvokeRequired)
+            {
+                var scd = new SafeCallDelegate(SafeButtonBehavior);
+                button6.Invoke(scd, text, color);
+                return;
+            }
+
+            button6.Text = text + @" 360 now";
+            button6.BackColor = color;
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            _mover.SetBeatSaberPath(textBox2.Text);
+            UpdateGui();
         }
     }
 }

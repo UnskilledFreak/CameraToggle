@@ -13,42 +13,42 @@ namespace Mover
 
         public readonly View View;
 
-        public float Fov = 90;
-        public int AntiAliasing = 2;
-        public float RenderScale = 1;
-        public float PositionSmooth = 10;
-        public float RotationSmooth = 5;
-        public float Cam360Smoothness = 2;
-        public bool ThirdPerson = false;
-        public bool ShowThirdPersonCamera = true;
-        public bool Use360Camera = false;
-        public float Posx;
-        public float Posy = 2;
-        public float Posz = -1.2f;
-        public float Angx = 15;
-        public float Angy;
-        public float Angz;
-        public float FirstPersonPosOffsetX;
-        public float FirstPersonPosOffsetY;
-        public float FirstPersonPosOffsetZ;
-        public float FirstPersonRotOffsetX;
-        public float FirstPersonRotOffsetY;
-        public float FirstPersonRotOffsetZ;
-        public float Cam360ForwardOffset = -2;
-        public float Cam360XTilt = 10;
-        public float Cam360ZTilt;
-        public float Cam360YTilt;
-        public float Cam360UpOffset = 2.2f;
-        public float Cam360RightOffset;
-        public int ScreenWidth = 1920;
-        public int ScreenHeight = 1080;
-        public int ScreenPosX;
-        public int ScreenPosY;
-        public int Layer = -1000;
-        public bool FitToCanvas = false;
-        public bool TransparentWalls = false;
-        public bool ForceFirstPersonUpRight = false;
-        public string MovementScriptPath = string.Empty;
+        public float Fov { get; set; } = 90;
+        public int AntiAliasing { get; set; } = 2;
+        public float RenderScale { get; set; } = 1;
+        public float PositionSmooth { get; set; } = 10;
+        public float RotationSmooth { get; set; } = 5;
+        public float Cam360Smoothness { get; set; } = 2;
+        public bool ThirdPerson { get; set; } = false;
+        public bool ShowThirdPersonCamera { get; set; } = true;
+        public bool Use360Camera { get; set; } = false;
+        public float PosX { get; set; }
+        public float PosY { get; set; } = 2;
+        public float PosZ { get; set; } = -1.2f;
+        public float AngX { get; set; } = 15;
+        public float AngY { get; set; }
+        public float AngZ { get; set; }
+        public float FirstPersonPosOffsetX { get; set; }
+        public float FirstPersonPosOffsetY { get; set; }
+        public float FirstPersonPosOffsetZ { get; set; }
+        public float FirstPersonRotOffsetX { get; set; }
+        public float FirstPersonRotOffsetY { get; set; }
+        public float FirstPersonRotOffsetZ { get; set; }
+        public float Cam360ForwardOffset { get; set; } = -2;
+        public float Cam360XTilt { get; set; } = 10;
+        public float Cam360ZTilt { get; set; }
+        public float Cam360YTilt { get; set; }
+        public float Cam360UpOffset { get; set; } = 2.2f;
+        public float Cam360RightOffset { get; set; }
+        public int ScreenWidth { get; set; } = 1920;
+        public int ScreenHeight { get; set; } = 1080;
+        public int ScreenPosX { get; set; }
+        public int ScreenPosY { get; set; }
+        public int Layer { get; set; } = -1000;
+        public bool FitToCanvas { get; set; } = false;
+        public bool TransparentWalls { get; set; } = false;
+        public bool ForceFirstPersonUpRight { get; set; } = false;
+        public string MovementScriptPath { get; set; } = string.Empty;
 
         public static CameraPlusConfig FromFile(string filePath, View view, ILogger logger)
         {
@@ -95,22 +95,22 @@ namespace Mover
                         Use360Camera = value.ToLower() == "true";
                         break;
                     case "posx":
-                        Posx = float.Parse(value);
+                        PosX = float.Parse(value);
                         break;
                     case "posy":
-                        Posy = float.Parse(value);
+                        PosY = float.Parse(value);
                         break;
                     case "posz":
-                        Posz = float.Parse(value);
+                        PosZ = float.Parse(value);
                         break;
                     case "angx":
-                        Angx = float.Parse(value);
+                        AngX = float.Parse(value);
                         break;
                     case "angy":
-                        Angy = float.Parse(value);
+                        AngY = float.Parse(value);
                         break;
                     case "angz":
-                        Angz = float.Parse(value);
+                        AngZ = float.Parse(value);
                         break;
                     case "firstPersonPosOffsetX":
                         FirstPersonPosOffsetX = float.Parse(value);
@@ -219,12 +219,12 @@ namespace Mover
                 "thirdPerson=" + ToBool(ThirdPerson),
                 "showThirdPersonCamera=" + ToBool(ShowThirdPersonCamera),
                 "use360Camera=" + ToBool(Use360Camera),
-                "posx=" + Posx,
-                "posy=" + Posy,
-                "posz=" + Posz,
-                "angx=" + Angx,
-                "angy=" + Angy,
-                "angz=" + Angz,
+                "posx=" + PosX,
+                "posy=" + PosY,
+                "posz=" + PosZ,
+                "angx=" + AngX,
+                "angy=" + AngY,
+                "angz=" + AngZ,
                 "firstPersonPosOffsetX=" + FirstPersonPosOffsetX,
                 "firstPersonPosOffsetY=" + FirstPersonPosOffsetY,
                 "firstPersonPosOffsetZ=" + FirstPersonPosOffsetZ,
@@ -233,8 +233,8 @@ namespace Mover
                 "firstPersonRotOffsetZ=" + FirstPersonRotOffsetZ,
                 "cam360ForwardOffset=" + Cam360ForwardOffset,
                 "cam360XTilt=" + Cam360XTilt,
-                "cam360YTilt=" + Cam360YTilt,
                 "cam360ZTilt=" + Cam360ZTilt,
+                "cam360YTilt=" + Cam360YTilt,
                 "cam360UpOffset=" + Cam360UpOffset,
                 "cam360RightOffset=" + Cam360RightOffset,
                 "screenWidth=" + ScreenWidth,
@@ -266,12 +266,12 @@ namespace Mover
             ThirdPerson = _backup.ThirdPerson;
             ShowThirdPersonCamera = _backup.ShowThirdPersonCamera;
             Use360Camera = _backup.Use360Camera;
-            Posx = _backup.Posx;
-            Posy = _backup.Posy;
-            Posz = _backup.Posz;
-            Angx = _backup.Angx;
-            Angy = _backup.Angy;
-            Angz = _backup.Angz;
+            PosX = _backup.PosX;
+            PosY = _backup.PosY;
+            PosZ = _backup.PosZ;
+            AngX = _backup.AngX;
+            AngY = _backup.AngY;
+            AngZ = _backup.AngZ;
             FirstPersonPosOffsetX = _backup.FirstPersonPosOffsetX;
             FirstPersonPosOffsetY = _backup.FirstPersonPosOffsetY;
             FirstPersonPosOffsetZ = _backup.FirstPersonPosOffsetZ;
