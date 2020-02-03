@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraPlusExternalMover", "CameraPlusExternalMover\CameraPlusExternalMover.csproj", "{72E06BCB-DF0F-4C94-8E0C-671215F967DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{72E06BCB-DF0F-4C94-8E0C-671215F967DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{9AFF71AF-12D5-4871-B972-483F24E7229A}"
 EndProject

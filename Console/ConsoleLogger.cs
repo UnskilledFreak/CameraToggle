@@ -1,13 +1,12 @@
-using System;
 using Mover;
 
-namespace CameraPlusExternalMover
+namespace Console
 {
     public class ConsoleLogger : ILogger
     {
         public void Log(string message)
         {
-            Console.WriteLine(message);
+            System.Console.WriteLine(message);
         }
     }
 }

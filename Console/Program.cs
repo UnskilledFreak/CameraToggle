@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace CameraPlusExternalMover
+namespace Console
 {
     class Program
     {
