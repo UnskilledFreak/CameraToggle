@@ -73,6 +73,11 @@ namespace Mover
 
         public bool AreCamsIn360(CameraPlusConfig front = null, CameraPlusConfig back = null)
         {
+            if (!IsLoaded)
+            {
+                return false;
+            }
+            
             if (front == null)
             {
                 front = GetFromView(View.Front);
