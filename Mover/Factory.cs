@@ -44,7 +44,7 @@ namespace Mover
                 File.Delete(file);
             }
             
-            SetBeatSaberPath(File.ReadAllText("beatsaberpath.txt"));
+            //SetBeatSaberPath(File.ReadAllText("beatsaberpath.txt"));
         }
 
         public void SetBeatSaberPath(string path)
@@ -88,7 +88,7 @@ namespace Mover
                 back = GetFromView(View.Back);
             }
 
-            return front.Use360Camera == back.Use360Camera && front.Use360Camera;
+            return front.Use360Camera && back.Use360Camera;
         }
         
         private void LoadData()
@@ -215,19 +215,24 @@ namespace Mover
             
             var command = parsing[0].Trim();
             _logger.Log($"invoking \"{command}\"");
+            
+            var back = GetFromView(View.Back);
+            var front = GetFromView(View.Front);
+            var fp = GetFromView(View.FirstPerson);
+            
             switch (command)
             {
                 case CommandFirstPerson:
-                    ToggleFirstPerson();
+                    Toggle(back, fp);
                     break;
 
                 case CommandFirstPersonSmallCams:
-                    ToggleFirstPerson();
+                    Toggle(back, fp);
                     SetCamDimensions(GetFromView(View.FirstPerson), GetFromView(View.Front));
                     break;
 
                 case CommandFront:
-                    ToggleFront();
+                    Toggle(back, front);
                     break;
 
                 case CommandBack:
@@ -236,13 +241,13 @@ namespace Mover
                     break;
 
                 case CommandToggle360:
-                    var front = GetFromView(View.Front);
-                    var back = GetFromView(View.Back);
                     var state = !AreCamsIn360(front, back);
 
                     front.Use360Camera = state;
                     back.Use360Camera = state;
-                    
+
+                    front.Changed = true;
+                    back.Changed = true;
                     break;
 
                 default:
@@ -272,29 +277,16 @@ namespace Mover
             config2.ScreenPosY = config1.ScreenPosY;
             config2.ScreenWidth = width;
             config2.ScreenHeight = height;
+
+            config1.Changed = true;
+            config2.Changed = true;
         }
-
-        private void ToggleFirstPerson()
-        {
-            var back = GetFromView(View.Back);
-            var fp = GetFromView(View.FirstPerson);
-
-            Toggle(back, fp);
-        }
-
-        private void ToggleFront()
-        {
-            var back = GetFromView(View.Back);
-            var front = GetFromView(View.Front);
-
-            Toggle(back, front);
-        }
-
         private void RestoreAllCams()
         {
             foreach (var camera in _cameras)
             {
                 camera.RestoreFromBackup();
+                camera.Changed = false;
             }
         }
 
@@ -391,6 +383,9 @@ namespace Mover
             toCam.AngY = tmpAngY;
             toCam.AngZ = tmpAngZ;
             //}
+
+            fromCam.Changed = true;
+            toCam.Changed = true;
         }
 
         private CameraPlusConfig GetFromView(View view) => _cameras.First(cam => cam.View == view);

@@ -7,10 +7,11 @@ namespace Mover
     public class CameraPlusConfig
     {
         private readonly string _filePath;
-        private readonly CameraPlusConfig _backup;
         private readonly ILogger _logger;
-        private readonly FileSystemWatcher _watcher;
+        private CameraPlusConfig _backup;
+        private FileSystemWatcher _watcher;
 
+        public bool Changed { get; set; }
         public readonly View View;
 
         public float Fov { get; set; } = 90;
@@ -60,7 +61,12 @@ namespace Mover
             _filePath = filePath;
             View = view;
             _logger = logger;
+            Changed = false;
+            
+            LoadFile(createRestoreBackup);
+        }
 
+        private void LoadFile(bool createRestoreBackup = true) {
             foreach (var line in File.ReadAllLines(_filePath))
             {
                 var split = line.Split('=');
@@ -180,7 +186,7 @@ namespace Mover
 
             if (createRestoreBackup)
             {
-                _backup = new CameraPlusConfig(filePath, view, logger, false);
+                _backup = new CameraPlusConfig(_filePath, View, _logger, false);
                 _watcher = new FileSystemWatcher(Path.GetDirectoryName(_filePath))
                 {
                     NotifyFilter = NotifyFilters.LastWrite,
@@ -191,7 +197,7 @@ namespace Mover
             }
 
             var createRestoreBackupString = createRestoreBackup ? "backup " : "";
-            _logger.Log($"loaded {createRestoreBackupString}{_filePath}");
+            _logger.Log($"loaded {createRestoreBackupString}{Path.GetFileName(_filePath)}");
         }
 
         public void Destroy()
@@ -203,11 +209,17 @@ namespace Mover
         {
             //var conf = _cameras.First(x => x.FilePath == args.FullPath);
             //_logger.Log($"{conf.View:g} config file written!");
-            _logger.Log($"{args.FullPath} config written");
+            _logger.Log($"{args.Name} config written");
+            LoadFile(false);
         }
 
         public void Save()
         {
+            if (!Changed)
+            {
+                return;
+            }
+            
             var linesToWrite = new List<string>
             {
                 "fov=" + Fov,

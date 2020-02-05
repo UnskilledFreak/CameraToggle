@@ -28,7 +28,9 @@ namespace GUI
             {
                 Callback360Toggle = Button6Behavior
             };
-            textBox2.Text = _mover.GetBeatSaberPath();
+            
+            //textBox2.Text = _mover.GetBeatSaberPath();
+            textBox2.Text = File.ReadAllText("beatsaberpath.txt");
 
             MaximumSize = Size;
             MinimumSize = Size;
@@ -117,6 +119,11 @@ namespace GUI
         {
             _mover.SetBeatSaberPath(textBox2.Text);
             UpdateGui();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            Button6Behavior();
         }
     }
 }
