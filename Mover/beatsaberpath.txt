@@ -1,1 +1,1 @@
-BeatSaberFake\UserData\CameraPlus
+BeatSaberFake
