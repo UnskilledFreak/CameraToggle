@@ -53,8 +53,6 @@ namespace Mover
             LoadData();
         }
 
-        public string GetBeatSaberPath() => _beatSaberDirectory;
-
         public void Destroy()
         {
             if (!_cameras.Any())
@@ -220,24 +218,19 @@ namespace Mover
             
             var command = parsing[0].Trim();
             _logger.Log($"invoking \"{command}\"");
-            
-            var back = GetFromView(View.Back);
-            var front = GetFromView(View.Front);
-            var fp = GetFromView(View.FirstPerson);
-            
+
             switch (command)
             {
                 case CommandFirstPerson:
-                    Toggle(back, fp);
+                    CmdFirstPerson();
                     break;
 
                 case CommandFirstPersonSmallCams:
-                    Toggle(back, fp);
-                    SetCamDimensions(GetFromView(View.FirstPerson), GetFromView(View.Front));
+                    CmdFirstPersonSmallCams();
                     break;
 
                 case CommandFront:
-                    Toggle(back, front);
+                    CmdFront();
                     break;
 
                 case CommandBack:
@@ -246,13 +239,7 @@ namespace Mover
                     break;
 
                 case CommandToggle360:
-                    var state = !AreCamsIn360(front, back);
-
-                    front.Use360Camera = state;
-                    back.Use360Camera = state;
-
-                    front.Changed = true;
-                    back.Changed = true;
+                    CmdToggle360();
                     break;
 
                 default:
@@ -266,6 +253,35 @@ namespace Mover
             {
                 Callback360Toggle?.Invoke();
             }
+        }
+
+        public void CmdFirstPerson()
+        {
+            Toggle(GetFromView(View.Back), GetFromView(View.FirstPerson));
+        }
+
+        public void CmdFront()
+        {
+            Toggle(GetFromView(View.Back), GetFromView(View.Front));
+        }
+
+        public void CmdFirstPersonSmallCams()
+        {
+            Toggle(GetFromView(View.Back), GetFromView(View.FirstPerson));
+            SetCamDimensions(GetFromView(View.FirstPerson), GetFromView(View.Front));
+        }
+
+        public void CmdToggle360()
+        {
+            var back = GetFromView(View.Back);
+            var front = GetFromView(View.Front);
+            var state = !AreCamsIn360(front, back);
+
+            front.Use360Camera = state;
+            back.Use360Camera = state;
+
+            front.Changed = true;
+            back.Changed = true;
         }
 
         private void SetCamDimensions(CameraPlusConfig config1, CameraPlusConfig config2)
@@ -286,7 +302,7 @@ namespace Mover
             config1.Changed = true;
             config2.Changed = true;
         }
-        private void RestoreAllCams()
+        public void RestoreAllCams()
         {
             foreach (var camera in _cameras)
             {
