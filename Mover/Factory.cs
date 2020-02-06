@@ -57,6 +57,11 @@ namespace Mover
 
         public void Destroy()
         {
+            if (!_cameras.Any())
+            {
+                return;
+            }
+            
             _logger.Log("destroying...");
             foreach (var config in _cameras)
             {

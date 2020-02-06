@@ -8,11 +8,13 @@ namespace Mover
         
         public void LogException(Exception e)
         {
+            Log(e.GetType().ToString());
             Log(e.Message);
             Log(e.StackTrace);
 
             if (e.InnerException != null)
             {
+                Log("---inner exception---");
                 LogException(e.InnerException);
             }
         }
