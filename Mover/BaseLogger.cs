@@ -8,15 +8,15 @@ namespace Mover
         
         public void LogException(Exception e)
         {
-            Log(e.GetType().ToString());
-            Log(e.Message);
-            Log(e.StackTrace);
-
             if (e.InnerException != null)
             {
-                Log("---inner exception---");
                 LogException(e.InnerException);
+                Log("---inner exception---");
             }
+            
+            Log(e.StackTrace);
+            Log(e.Message);
+            Log(e.GetType().ToString());
         }
     }
 }
