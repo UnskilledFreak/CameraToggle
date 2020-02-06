@@ -14,7 +14,7 @@ namespace GUI
 
         public TextLogger(TextBox textBox)
         {
-            _writer = new StreamWriter("debug.log");
+            _writer = new StreamWriter($"debug_{DateTime.Now:yyyyMMdd}.log");
             _textBox = textBox;
         }
 
