@@ -24,24 +24,19 @@ namespace GUI
             _logger = new TextLogger(textBox1);
             _logger.Log("Loaded GUI");
 
-            _mover = new Factory(_logger)
-            {
-                Callback360Toggle = Button6Behavior
-            };
-            
+            _mover = new Factory(_logger);
+
             //textBox2.Text = _mover.GetBeatSaberPath();
             textBox2.Text = File.ReadAllText("beatsaberpath.txt");
 
             MaximumSize = Size;
             MinimumSize = Size;
 
-            UpdateGui();
+            UpdateGui(_mover.IsLoaded);
         }
 
-        private void UpdateGui()
+        private void UpdateGui(bool state)
         {
-            var state = _mover.IsLoaded;
-
             button1.Enabled = state;
             button2.Enabled = state;
             button3.Enabled = state;
@@ -54,40 +49,43 @@ namespace GUI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            WriteCommand(Factory.CommandRestore);
+            RunCommand(_mover.RestoreAllCams);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            WriteCommand(Factory.CommandFront);
+            RunCommand(_mover.CmdFront);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            WriteCommand(Factory.CommandFirstPerson);
+            RunCommand(_mover.CmdFirstPerson);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            WriteCommand(Factory.CommandFirstPersonSmallCams);
-        }
-
-        private void WriteCommand(string command)
-        {
-            var fileName = $@"{Factory.DirectoryName}\commands_{_random.Next(1000)}.txt";
-            File.WriteAllText(fileName, command);
-            _logger.Log($"wrote \"{command}\" to {fileName}");
+            RunCommand(_mover.CmdFirstPersonSmallCams);
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            _mover.Destroy();
-            _mover = new Factory(_logger);
+            RunCommand(() =>
+            {
+                _mover.Destroy();
+                _mover = new Factory(_logger);
+            });
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            WriteCommand(Factory.CommandToggle360);
+            RunCommand(_mover.CmdToggle360);
+        }
+
+        private void RunCommand(Action command)
+        {
+            UpdateGui(false);
+            command.Invoke();
+            UpdateGui(true);
         }
 
         private void Button6Behavior()
@@ -118,7 +116,7 @@ namespace GUI
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             _mover.SetBeatSaberPath(textBox2.Text);
-            UpdateGui();
+            UpdateGui(_mover.IsLoaded);
         }
 
         private void timer1_Tick(object sender, EventArgs e)

@@ -8,14 +8,13 @@ namespace Mover
 {
     public class Factory
     {
-        public const string DirectoryName = "commands";
-
-        public const string CommandBack = "Back";
-        public const string CommandFront = "Front";
-        public const string CommandRestore = "Restore";
-        public const string CommandFirstPerson = "FirstPerson";
-        public const string CommandFirstPersonSmallCams = "FirstPersonSmallCams";
-        public const string CommandToggle360 = "Toggle360";
+        private const string DirectoryName = "commands";
+        private const string CommandBack = "Back";
+        private const string CommandFront = "Front";
+        private const string CommandRestore = "Restore";
+        private const string CommandFirstPerson = "FirstPerson";
+        private const string CommandFirstPersonSmallCams = "FirstPersonSmallCams";
+        private const string CommandToggle360 = "Toggle360";
 
         private FileSystemWatcher _watcher;
         private List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
@@ -24,7 +23,6 @@ namespace Mover
         private string _beatSaberDirectory;
 
         public bool IsLoaded { get; private set; }
-        public Action Callback360Toggle;
 
         public Factory(ILogger logger)
         {
@@ -248,10 +246,14 @@ namespace Mover
             }
 
             SaveAllCams();
-
-            if (command == CommandToggle360)
+        }
+        
+        public void RestoreAllCams()
+        {
+            foreach (var camera in _cameras)
             {
-                Callback360Toggle?.Invoke();
+                camera.RestoreFromBackup();
+                camera.Changed = false;
             }
         }
 
@@ -301,14 +303,6 @@ namespace Mover
 
             config1.Changed = true;
             config2.Changed = true;
-        }
-        public void RestoreAllCams()
-        {
-            foreach (var camera in _cameras)
-            {
-                camera.RestoreFromBackup();
-                camera.Changed = false;
-            }
         }
 
         private void SaveAllCams()
