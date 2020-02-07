@@ -153,12 +153,8 @@ namespace Mover
 
         private void FileCreatedEvent(object sender, FileSystemEventArgs args)
         {
-            // can we access it? if not wait a few m sec
-            while (IsFileLocked(args.FullPath))
-            {
-                Thread.Sleep(200);
-            }
-
+            WaitUntilFileIsNotLocked(args.FullPath);
+            
             try
             {
                 var command = File.ReadAllText(args.FullPath);
@@ -173,7 +169,16 @@ namespace Mover
             }
         }
 
-        private bool IsFileLocked(string filePath)
+        public static void WaitUntilFileIsNotLocked(string filePath)
+        {
+            // can we access it? if not wait a few m sec
+            while (IsFileLocked(filePath))
+            {
+                Thread.Sleep(200);
+            }
+        }
+
+        public static bool IsFileLocked(string filePath)
         {
             var file = new FileInfo(filePath);
             FileStream stream = null;

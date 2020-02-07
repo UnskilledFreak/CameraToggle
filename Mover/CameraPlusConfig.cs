@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace Mover
 {
@@ -66,7 +67,10 @@ namespace Mover
             LoadFile(createRestoreBackup);
         }
 
-        private void LoadFile(bool createRestoreBackup = true) {
+        private void LoadFile(bool createRestoreBackup = true)
+        {
+            Factory.WaitUntilFileIsNotLocked(_filePath);
+            
             foreach (var line in File.ReadAllLines(_filePath))
             {
                 var split = line.Split('=');
@@ -197,7 +201,7 @@ namespace Mover
             }
 
             var createRestoreBackupString = createRestoreBackup ? "backup " : "";
-            _logger.Log($"loaded {createRestoreBackupString}{Path.GetFileName(_filePath)}");
+            _logger.Log($"(re)loaded {createRestoreBackupString}{Path.GetFileName(_filePath)}");
         }
 
         public void Destroy()
@@ -209,7 +213,7 @@ namespace Mover
         {
             //var conf = _cameras.First(x => x.FilePath == args.FullPath);
             //_logger.Log($"{conf.View:g} config file written!");
-            _logger.Log($"{args.Name} config written");
+            //_logger.Log($"{args.Name} config written");
             LoadFile(false);
         }
 
@@ -260,6 +264,7 @@ namespace Mover
                 "movementScriptPath=" + MovementScriptPath,
             };
 
+            Factory.WaitUntilFileIsNotLocked(_filePath);
             File.WriteAllText(_filePath, string.Join(Environment.NewLine, linesToWrite));
         }
 
