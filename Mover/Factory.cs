@@ -257,7 +257,6 @@ namespace Mover
             foreach (var camera in _cameras)
             {
                 camera.RestoreFromBackup();
-                camera.Changed = false;
             }
         }
 
