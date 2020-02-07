@@ -162,7 +162,7 @@ namespace Mover
             try
             {
                 var command = File.ReadAllText(args.FullPath);
-                ParseCommands(command);
+                ParseCommands(command.Trim('\n','\r'));
                 File.Delete(args.FullPath);
             }
             catch (IOException)
