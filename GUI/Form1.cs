@@ -85,6 +85,7 @@ namespace GUI
         {
             UpdateGui(false);
             command.Invoke();
+            _mover.SaveAllCams();
             UpdateGui(true);
         }
 
@@ -121,7 +122,7 @@ namespace GUI
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Button6Behavior();
+            UpdateGui(_mover.IsLoaded);
         }
     }
 }

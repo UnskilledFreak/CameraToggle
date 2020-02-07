@@ -15,11 +15,10 @@ namespace Mover
         private const string CommandFirstPerson = "FirstPerson";
         private const string CommandFirstPersonSmallCams = "FirstPersonSmallCams";
         private const string CommandToggle360 = "Toggle360";
-
+        private readonly List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
+        private readonly ILogger _logger;
+        
         private FileSystemWatcher _watcher;
-        private List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
-        private ILogger _logger;
-
         private string _beatSaberDirectory;
 
         public bool IsLoaded { get; private set; }
@@ -47,7 +46,7 @@ namespace Mover
 
         public void SetBeatSaberPath(string path)
         {
-            _beatSaberDirectory = path;
+            _beatSaberDirectory = Path.GetFullPath(path);
             LoadData();
         }
 
@@ -115,7 +114,7 @@ namespace Mover
                     throw new DirectoryNotFoundException(beatSaberDirectory);
                 }
 
-                _logger.Log($"camera path: {beatSaberDirectory}");
+                _logger.Log($"found camera path: {beatSaberDirectory}");
 
                 // load cameras
                 _logger.Log("Loading Cameras...");
@@ -286,6 +285,15 @@ namespace Mover
             back.Changed = true;
         }
 
+        public void SaveAllCams()
+        {
+            _logger.Log("saving cams");
+            foreach (var camera in _cameras)
+            {
+                camera.Save();
+            }
+        }
+
         private void SetCamDimensions(CameraPlusConfig config1, CameraPlusConfig config2)
         {
             const int width = 510;
@@ -303,15 +311,6 @@ namespace Mover
 
             config1.Changed = true;
             config2.Changed = true;
-        }
-
-        private void SaveAllCams()
-        {
-            _logger.Log("saving cams");
-            foreach (var camera in _cameras)
-            {
-                camera.Save();
-            }
         }
 
         private void Toggle(CameraPlusConfig fromCam, CameraPlusConfig toCam)
