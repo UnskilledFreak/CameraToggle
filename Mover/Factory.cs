@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -18,8 +19,12 @@ namespace Mover
         private readonly List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
         private readonly ILogger _logger;
         
+        private readonly Size _screenBig = new Size(650, 340);
+        private readonly Size _screenSmall = new Size(510, 300);
+        
         private FileSystemWatcher _watcher;
         private string _beatSaberDirectory;
+        private bool _toggle360State = false;
 
         public bool IsLoaded { get; private set; }
 
@@ -71,7 +76,7 @@ namespace Mover
             _logger.Log("done");
         }
 
-        public bool AreCamsIn360(CameraPlusConfig front = null, CameraPlusConfig back = null)
+        private bool AreCamsIn360(CameraPlusConfig front = null, CameraPlusConfig back = null)
         {
             if (!IsLoaded)
             {
@@ -142,6 +147,8 @@ namespace Mover
 
                 IsLoaded = true;
                 File.WriteAllText("beatsaberpath.txt", _beatSaberDirectory);
+
+                _toggle360State = AreCamsIn360();
             }
             catch (Exception e)
             {
@@ -224,20 +231,15 @@ namespace Mover
             switch (command)
             {
                 case CommandFirstPerson:
-                    CmdFirstPerson();
+                    CmdFirstPerson(false);
                     break;
 
                 case CommandFirstPersonSmallCams:
-                    CmdFirstPersonSmallCams();
+                    CmdFirstPerson(true);
                     break;
 
                 case CommandFront:
                     CmdFront();
-                    break;
-
-                case CommandBack:
-                case CommandRestore:
-                    //RestoreAllCams();
                     break;
 
                 case CommandToggle360:
@@ -258,11 +260,17 @@ namespace Mover
             {
                 camera.RestoreFromBackup();
             }
+            
+            SetCamDimensions(GetFromView(View.FirstPerson), GetFromView(View.Front), _screenBig);
         }
 
-        public void CmdFirstPerson()
+        public void CmdFirstPerson(bool smallCams)
         {
             Toggle(GetFromView(View.Back), GetFromView(View.FirstPerson));
+            if (smallCams)
+            {
+                SetCamDimensions(GetFromView(View.FirstPerson), GetFromView(View.Front), _screenSmall);
+            }
         }
 
         public void CmdFront()
@@ -270,17 +278,12 @@ namespace Mover
             Toggle(GetFromView(View.Back), GetFromView(View.Front));
         }
 
-        public void CmdFirstPersonSmallCams()
-        {
-            Toggle(GetFromView(View.Back), GetFromView(View.FirstPerson));
-            SetCamDimensions(GetFromView(View.FirstPerson), GetFromView(View.Front));
-        }
-
         public void CmdToggle360()
         {
+            _toggle360State = !_toggle360State;
             var back = GetFromView(View.Back);
             var front = GetFromView(View.Front);
-            var state = !AreCamsIn360(front, back);
+            var state = _toggle360State;
 
             front.Use360Camera = state;
             back.Use360Camera = state;
@@ -298,20 +301,18 @@ namespace Mover
             }
         }
 
-        private void SetCamDimensions(CameraPlusConfig config1, CameraPlusConfig config2)
+        private void SetCamDimensions(CameraPlusConfig config1, CameraPlusConfig config2, Size toSize)
         {
-            const int width = 510;
-            const int height = 300;
 
             config1.ScreenPosX = 0;
-            config1.ScreenPosY = 1080 - height;
-            config1.ScreenWidth = width;
-            config1.ScreenHeight = height;
+            config1.ScreenPosY = 1080 - toSize.Height;
+            config1.ScreenWidth = toSize.Width;
+            config1.ScreenHeight = toSize.Height;
 
-            config2.ScreenPosX = 1920 - width;
+            config2.ScreenPosX = 1920 - toSize.Width;
             config2.ScreenPosY = config1.ScreenPosY;
-            config2.ScreenWidth = width;
-            config2.ScreenHeight = height;
+            config2.ScreenWidth = toSize.Width;
+            config2.ScreenHeight = toSize.Height;
 
             config1.Changed = true;
             config2.Changed = true;
@@ -407,5 +408,7 @@ namespace Mover
         }
 
         private CameraPlusConfig GetFromView(View view) => _cameras.First(cam => cam.View == view);
+
+        public bool Cam360State() => _toggle360State;
     }
 }

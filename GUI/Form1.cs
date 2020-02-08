@@ -10,9 +10,9 @@ namespace GUI
     {
         private delegate void SafeCallDelegate(string text, Color color);
 
-        private readonly Random _random = new Random();
         private ILogger _logger;
         private Factory _mover;
+        private bool _noTick;
 
         public Form1()
         {
@@ -44,7 +44,14 @@ namespace GUI
             button5.Enabled = state;
             button6.Enabled = state;
 
-            Button6Behavior();
+            if (_mover.Cam360State())
+            {
+                SafeButtonBehavior("Disable", Color.Chartreuse);
+            }
+            else
+            {
+                SafeButtonBehavior("Enable", Color.Crimson);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -59,12 +66,18 @@ namespace GUI
 
         private void button3_Click(object sender, EventArgs e)
         {
-            RunCommand(_mover.CmdFirstPerson);
+            RunCommand(() =>
+            {
+                _mover.CmdFirstPerson(false);
+            });
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            RunCommand(_mover.CmdFirstPersonSmallCams);
+            RunCommand(() =>
+            {
+                _mover.CmdFirstPerson(true);
+            });
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -73,6 +86,7 @@ namespace GUI
             {
                 _mover.Destroy();
                 _mover = new Factory(_logger);
+                _mover.SetBeatSaberPath(textBox2.Text);
             });
         }
 
@@ -83,22 +97,13 @@ namespace GUI
 
         private void RunCommand(Action command)
         {
+            _noTick = true;
             UpdateGui(false);
+            _mover.RestoreAllCams();
             command.Invoke();
             _mover.SaveAllCams();
             UpdateGui(true);
-        }
-
-        private void Button6Behavior()
-        {
-            if (_mover.AreCamsIn360())
-            {
-                SafeButtonBehavior("Disable", Color.Chartreuse);
-            }
-            else
-            {
-                SafeButtonBehavior("Enable", Color.Crimson);
-            }
+            _noTick = false;
         }
 
         private void SafeButtonBehavior(string text, Color color)
@@ -116,8 +121,11 @@ namespace GUI
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
+            if (_noTick)
+            {
+                return;
+            }
             _mover.SetBeatSaberPath(textBox2.Text);
-            UpdateGui(_mover.IsLoaded);
         }
 
         private void timer1_Tick(object sender, EventArgs e)

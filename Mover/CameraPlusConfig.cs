@@ -282,7 +282,7 @@ namespace Mover
             RotationSmooth = _backup.RotationSmooth;
             ThirdPerson = _backup.ThirdPerson;
             ShowThirdPersonCamera = _backup.ShowThirdPersonCamera;
-            //Use360Camera = _backup.Use360Camera;    // fix???
+            Use360Camera = _backup.Use360Camera;
             PosX = _backup.PosX;
             PosY = _backup.PosY;
             PosZ = _backup.PosZ;
@@ -311,7 +311,7 @@ namespace Mover
             ForceFirstPersonUpRight = _backup.ForceFirstPersonUpRight;
             MovementScriptPath = _backup.MovementScriptPath;
 
-            Changed = false;
+            Changed = true;
         }
 
         private string ToBool(bool input) => input ? "True" : "False";
