@@ -230,6 +230,11 @@ namespace Mover
 
             switch (command)
             {
+                case CommandBack:
+                case CommandRestore:
+                    // ignore, its just restore and saving but must be here so it wont get trapped in default case
+                    break;
+                
                 case CommandFirstPerson:
                     CmdFirstPerson(false);
                     break;

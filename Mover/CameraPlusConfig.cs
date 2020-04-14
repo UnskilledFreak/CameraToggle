@@ -50,6 +50,8 @@ namespace Mover
         public bool FitToCanvas { get; set; } = false;
         public bool TransparentWalls { get; set; } = false;
         public bool ForceFirstPersonUpRight { get; set; } = false;
+        public bool Avatar { get; set; } = true;
+        public string Debris { get; set; } = string.Empty;
         public string MovementScriptPath { get; set; } = string.Empty;
 
         public static CameraPlusConfig FromFile(string filePath, View view, ILogger logger)
@@ -96,13 +98,13 @@ namespace Mover
                         Cam360Smoothness = float.Parse(value);
                         break;
                     case "thirdPerson":
-                        ThirdPerson = value.ToLower() == "true";
+                        ThirdPerson = ToBoolValue(value);
                         break;
                     case "showThirdPersonCamera":
-                        ShowThirdPersonCamera = value.ToLower() == "true";
+                        ShowThirdPersonCamera = ToBoolValue(value);
                         break;
                     case "use360Camera":
-                        Use360Camera = value.ToLower() == "true";
+                        Use360Camera = ToBoolValue(value);
                         break;
                     case "posx":
                         PosX = float.Parse(value);
@@ -174,13 +176,19 @@ namespace Mover
                         Layer = int.Parse(value);
                         break;
                     case "fitToCanvas":
-                        FitToCanvas = value.ToLower() == "true";
+                        FitToCanvas = ToBoolValue(value);
                         break;
                     case "transparentWalls":
-                        TransparentWalls = value.ToLower() == "true";
+                        TransparentWalls = ToBoolValue(value);
                         break;
                     case "forceFirstPersonUpRight":
-                        ForceFirstPersonUpRight = value.ToLower() == "true";
+                        ForceFirstPersonUpRight = ToBoolValue(value);
+                        break;
+                    case "avatar":
+                        Avatar = ToBoolValue(value);
+                        break;
+                    case "debri":
+                        Debris = value;
                         break;
                     case "movementScriptPath":
                         MovementScriptPath = value;
@@ -207,6 +215,11 @@ namespace Mover
         public void Destroy()
         {
             _watcher.Changed -= FileChangeEvent;
+        }
+
+        private bool ToBoolValue(string value)
+        {
+            return value.ToLower() == "true";
         }
 
         private void FileChangeEvent(object sender, FileSystemEventArgs args)
@@ -261,6 +274,8 @@ namespace Mover
                 "fitToCanvas=" + ToBool(FitToCanvas),
                 "transparentWalls=" + ToBool(TransparentWalls),
                 "forceFirstPersonUpRight=" + ToBool(ForceFirstPersonUpRight),
+                "avatar=" +  ToBool(Avatar),
+                "debri=" + Debris,
                 "movementScriptPath=" + MovementScriptPath,
             };
 
@@ -309,6 +324,8 @@ namespace Mover
             FitToCanvas = _backup.FitToCanvas;
             TransparentWalls = _backup.TransparentWalls;
             ForceFirstPersonUpRight = _backup.ForceFirstPersonUpRight;
+            Avatar = _backup.Avatar;
+            Debris = _backup.Debris;
             MovementScriptPath = _backup.MovementScriptPath;
 
             Changed = true;
