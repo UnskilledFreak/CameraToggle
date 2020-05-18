@@ -21,6 +21,7 @@ namespace Mover
         public float PositionSmooth { get; set; } = 10;
         public float RotationSmooth { get; set; } = 5;
         public float Cam360Smoothness { get; set; } = 2;
+        public bool Cam360RotateControlNew { get; set; } = true;
         public bool ThirdPerson { get; set; } = false;
         public bool ShowThirdPersonCamera { get; set; } = true;
         public bool Use360Camera { get; set; } = false;
@@ -96,6 +97,9 @@ namespace Mover
                         break;
                     case "cam360Smoothness":
                         Cam360Smoothness = float.Parse(value);
+                        break;
+                    case "cam360RotateControlNew":
+                        Cam360RotateControlNew = ToBoolValue(value);
                         break;
                     case "thirdPerson":
                         ThirdPerson = ToBoolValue(value);
@@ -245,9 +249,10 @@ namespace Mover
                 "positionSmooth=" + PositionSmooth,
                 "rotationSmooth=" + RotationSmooth,
                 "cam360Smoothness=" + Cam360Smoothness,
-                "thirdPerson=" + ToBool(ThirdPerson),
-                "showThirdPersonCamera=" + ToBool(ShowThirdPersonCamera),
-                "use360Camera=" + ToBool(Use360Camera),
+                "cam360RotateControlNew=" + ToBoolString(Cam360RotateControlNew),
+                "thirdPerson=" + ToBoolString(ThirdPerson),
+                "showThirdPersonCamera=" + ToBoolString(ShowThirdPersonCamera),
+                "use360Camera=" + ToBoolString(Use360Camera),
                 "posx=" + PosX,
                 "posy=" + PosY,
                 "posz=" + PosZ,
@@ -271,10 +276,10 @@ namespace Mover
                 "screenPosX=" + ScreenPosX,
                 "screenPosY=" + ScreenPosY,
                 "layer=" + Layer,
-                "fitToCanvas=" + ToBool(FitToCanvas),
-                "transparentWalls=" + ToBool(TransparentWalls),
-                "forceFirstPersonUpRight=" + ToBool(ForceFirstPersonUpRight),
-                "avatar=" +  ToBool(Avatar),
+                "fitToCanvas=" + ToBoolString(FitToCanvas),
+                "transparentWalls=" + ToBoolString(TransparentWalls),
+                "forceFirstPersonUpRight=" + ToBoolString(ForceFirstPersonUpRight),
+                "avatar=" +  ToBoolString(Avatar),
                 "debri=" + Debris,
                 "movementScriptPath=" + MovementScriptPath,
             };
@@ -331,6 +336,6 @@ namespace Mover
             Changed = true;
         }
 
-        private string ToBool(bool input) => input ? "True" : "False";
+        private string ToBoolString(bool input) => input ? "True" : "False";
     }
 }
