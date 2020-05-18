@@ -2,11 +2,11 @@
 
 CPEM is an external, standalone tool allowing you to modify your cameras on the fly by reacting to specific commands.
 
-This tool is standalone and depends only on three simple things:
+This tool is standalone and depends only on four simple things:
  - Beat Saber Mod `CameraPlus` - written and modified by many great modders - thank you all!
  - some sort of chatbot allowing you to add custom commands and create files like Streamlabs Chatbot
  - .NET Core 3.1
- - text file with Beat Saber's install directory
+ - text file with Beat Saber's install directory (included in release but must be modified)
 
 ## Why?
 
