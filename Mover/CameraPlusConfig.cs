@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -84,6 +85,7 @@ namespace Mover
             Factory.WaitUntilFileIsNotLocked(_filePath);
             var array = File.ReadAllLines(_filePath).Select(x => x.Split('=')).ToList();
             
+            // todo :: reflection via fields
             LockScreen.LoadFromStr(array);
             Fov.LoadFromStr(array);
             AntiAliasing.LoadFromStr(array);
@@ -160,10 +162,54 @@ namespace Mover
                 return;
             }
 
-            var linesToWrite = GetType()
-                .GetProperties(BindingFlags.Public)
-                .Where(x => x.PropertyType == typeof(ConfigProperty<>))
-                .Select(x => x.PropertyType.GetMethod("GetSaveStr")?.Invoke(x.GetValue(null), null));
+            // todo :: reflection via fields
+            var linesToWrite = new List<string>
+            {
+                LockScreen.GetSaveStr(),
+                Fov.GetSaveStr(),
+                AntiAliasing.GetSaveStr(),
+                RenderScale.GetSaveStr(),
+                PositionSmooth.GetSaveStr(),
+                RotationSmooth.GetSaveStr(),
+                Cam360Smoothness.GetSaveStr(),
+                Cam360RotateControlNew.GetSaveStr(),
+                ThirdPerson.GetSaveStr(),
+                ShowThirdPersonCamera.GetSaveStr(),
+                Use360Camera.GetSaveStr(),
+                PosX.GetSaveStr(),
+                PosY.GetSaveStr(),
+                PosZ.GetSaveStr(),
+                AngX.GetSaveStr(),
+                AngY.GetSaveStr(),
+                AngZ.GetSaveStr(),
+                FirstPersonPosOffsetX.GetSaveStr(),
+                FirstPersonPosOffsetY.GetSaveStr(),
+                FirstPersonPosOffsetZ.GetSaveStr(),
+                FirstPersonRotOffsetX.GetSaveStr(),
+                FirstPersonRotOffsetY.GetSaveStr(),
+                FirstPersonRotOffsetZ.GetSaveStr(),
+                Cam360ForwardOffset.GetSaveStr(),
+                Cam360XTilt.GetSaveStr(),
+                Cam360ZTilt.GetSaveStr(),
+                Cam360YTilt.GetSaveStr(),
+                Cam360UpOffset.GetSaveStr(),
+                Cam360RightOffset.GetSaveStr(),
+                ScreenWidth.GetSaveStr(),
+                ScreenHeight.GetSaveStr(),
+                ScreenPosX.GetSaveStr(),
+                ScreenPosY.GetSaveStr(),
+                MultiPlayerNumber.GetSaveStr(),
+                DisplayMultiPlayerNameInfo.GetSaveStr(),
+                Layer.GetSaveStr(),
+                FitToCanvas.GetSaveStr(),
+                TransparentWalls.GetSaveStr(),
+                ForceFirstPersonUpRight.GetSaveStr(),
+                Avatar.GetSaveStr(),
+                Debris.GetSaveStr(),
+                HideUi.GetSaveStr(),
+                MovementScriptPath.GetSaveStr(),
+                MovementAudioSync.GetSaveStr()
+            };
 
             Factory.WaitUntilFileIsNotLocked(_filePath);
             File.WriteAllText(_filePath, string.Join(Environment.NewLine, linesToWrite));
