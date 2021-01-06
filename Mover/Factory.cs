@@ -9,13 +9,14 @@ namespace Mover
 {
     public class Factory
     {
+        public const string CommandBack = "Back";
+        public const string CommandFront = "Front";
+        public const string CommandRestore = "Restore";
+        public const string CommandFirstPerson = "FirstPerson";
+        public const string CommandFirstPersonSmallCams = "FirstPersonSmallCams";
+        public const string CommandToggle360 = "Toggle360";
+
         private const string DirectoryName = "commands";
-        private const string CommandBack = "Back";
-        private const string CommandFront = "Front";
-        private const string CommandRestore = "Restore";
-        private const string CommandFirstPerson = "FirstPerson";
-        private const string CommandFirstPersonSmallCams = "FirstPersonSmallCams";
-        private const string CommandToggle360 = "Toggle360";
         private readonly List<CameraPlusConfig> _cameras = new List<CameraPlusConfig>();
         private readonly ILogger _logger;
         
@@ -93,7 +94,7 @@ namespace Mover
                 back = GetFromView(View.Back);
             }
 
-            return front.Use360Camera && back.Use360Camera;
+            return front.Use360Camera.Value && back.Use360Camera.Value;
         }
         
         private void LoadData()
@@ -206,7 +207,7 @@ namespace Mover
             return false;
         }
 
-        private void ParseCommands(string commandString)
+        public void ParseCommands(string commandString)
         {
             if (!IsLoaded)
             {
@@ -256,6 +257,10 @@ namespace Mover
                     return;
             }
 
+            GetFromView(View.FirstPerson).Avatar.Value = false;
+            GetFromView(View.Back).Avatar.Value = true;
+            GetFromView(View.Front).Avatar.Value = true;
+            
             SaveAllCams();
         }
         
@@ -290,8 +295,8 @@ namespace Mover
             var front = GetFromView(View.Front);
             var state = _toggle360State;
 
-            front.Use360Camera = state;
-            back.Use360Camera = state;
+            front.Use360Camera.Value = state;
+            back.Use360Camera.Value = state;
 
             front.Changed = true;
             back.Changed = true;
@@ -306,41 +311,28 @@ namespace Mover
             }
         }
 
-        private void SetCamDimensions(CameraPlusConfig config1, CameraPlusConfig config2, Size toSize)
+        private static void SetCamDimensions(CameraPlusConfig config1, CameraPlusConfig config2, Size toSize)
         {
+            config1.ScreenPosX.Value = 0;
+            config1.ScreenPosY.Value = 1080 - toSize.Height;
+            config1.ScreenWidth.Value = toSize.Width;
+            config1.ScreenHeight.Value = toSize.Height;
 
-            config1.ScreenPosX = 0;
-            config1.ScreenPosY = 1080 - toSize.Height;
-            config1.ScreenWidth = toSize.Width;
-            config1.ScreenHeight = toSize.Height;
-
-            config2.ScreenPosX = 1920 - toSize.Width;
-            config2.ScreenPosY = config1.ScreenPosY;
-            config2.ScreenWidth = toSize.Width;
-            config2.ScreenHeight = toSize.Height;
+            config2.ScreenPosX.Value = 1920 - toSize.Width;
+            config2.ScreenPosY.Value = config1.ScreenPosY;
+            config2.ScreenWidth.Value = toSize.Width;
+            config2.ScreenHeight.Value = toSize.Height;
 
             config1.Changed = true;
             config2.Changed = true;
         }
 
-        private void Toggle(CameraPlusConfig fromCam, CameraPlusConfig toCam)
+        private static void Toggle(CameraPlusConfig fromCam, CameraPlusConfig toCam)
         {
-            /*
-            if (fromCam.Use360Camera != toCam.Use360Camera)
-            {
-                return;
-            }
-            */
-
-
             var tmpTransparentWalls = fromCam.TransparentWalls;
             fromCam.TransparentWalls = toCam.TransparentWalls;
             toCam.TransparentWalls = tmpTransparentWalls;
 
-            /*
-            if (fromCam.Use360Camera)
-            {
-            */
             // swap 360 settings
             var tmpCam360Smoothness = fromCam.Cam360Smoothness;
             var tmpUse360Camera = fromCam.Use360Camera;
@@ -368,11 +360,7 @@ namespace Mover
             toCam.Cam360YTilt = tmpCam360YTilt;
             toCam.Cam360UpOffset = tmpCam360UpOffset;
             toCam.Cam360RightOffset = tmpCam360RightOffset;
-            /*
-        }
-        else
-        {
-        */
+            
             // swap global position
             var tmpPositionSmooth = fromCam.PositionSmooth;
             var tmpRotationSmooth = fromCam.RotationSmooth;
@@ -406,7 +394,6 @@ namespace Mover
             toCam.AngX = tmpAngX;
             toCam.AngY = tmpAngY;
             toCam.AngZ = tmpAngZ;
-            //}
 
             fromCam.Changed = true;
             toCam.Changed = true;

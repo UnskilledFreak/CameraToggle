@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading;
+using System.Linq;
+using System.Reflection;
 
 namespace Mover
 {
@@ -15,49 +15,58 @@ namespace Mover
         public bool Changed { get; set; }
         public readonly View View;
 
-        public float Fov { get; set; } = 90;
-        public int AntiAliasing { get; set; } = 2;
-        public float RenderScale { get; set; } = 1;
-        public float PositionSmooth { get; set; } = 10;
-        public float RotationSmooth { get; set; } = 5;
-        public float Cam360Smoothness { get; set; } = 2;
-        public bool Cam360RotateControlNew { get; set; } = true;
-        public bool ThirdPerson { get; set; } = false;
-        public bool ShowThirdPersonCamera { get; set; } = true;
-        public bool Use360Camera { get; set; } = false;
-        public float PosX { get; set; }
-        public float PosY { get; set; } = 2;
-        public float PosZ { get; set; } = -1.2f;
-        public float AngX { get; set; } = 15;
-        public float AngY { get; set; }
-        public float AngZ { get; set; }
-        public float FirstPersonPosOffsetX { get; set; }
-        public float FirstPersonPosOffsetY { get; set; }
-        public float FirstPersonPosOffsetZ { get; set; }
-        public float FirstPersonRotOffsetX { get; set; }
-        public float FirstPersonRotOffsetY { get; set; }
-        public float FirstPersonRotOffsetZ { get; set; }
-        public float Cam360ForwardOffset { get; set; } = -2;
-        public float Cam360XTilt { get; set; } = 10;
-        public float Cam360ZTilt { get; set; }
-        public float Cam360YTilt { get; set; }
-        public float Cam360UpOffset { get; set; } = 2.2f;
-        public float Cam360RightOffset { get; set; }
-        public int ScreenWidth { get; set; } = 1920;
-        public int ScreenHeight { get; set; } = 1080;
-        public int ScreenPosX { get; set; }
-        public int ScreenPosY { get; set; }
-        public int Layer { get; set; } = -1000;
-        public bool FitToCanvas { get; set; } = false;
-        public bool TransparentWalls { get; set; } = false;
-        public bool ForceFirstPersonUpRight { get; set; } = false;
-        public bool Avatar { get; set; } = true;
-        public string Debris { get; set; } = string.Empty;
-        public string MovementScriptPath { get; set; } = string.Empty;
+        public ConfigProperty<bool> LockScreen = new ConfigProperty<bool>("LockScreen", true);
+        public ConfigProperty<float> Fov = new ConfigProperty<float>("fov", 90);
+        public ConfigProperty<int> AntiAliasing = new ConfigProperty<int>("antiAliasing", 2);
+        public ConfigProperty<float> RenderScale = new ConfigProperty<float>("renderScale", 1);
+        public ConfigProperty<float> PositionSmooth = new ConfigProperty<float>("positionSmooth", 10);
+        public ConfigProperty<float> RotationSmooth = new ConfigProperty<float>("rotationSmooth", 5);
+        public ConfigProperty<float> Cam360Smoothness = new ConfigProperty<float>("cam360Smoothness", 2);
+        public ConfigProperty<bool> Cam360RotateControlNew = new ConfigProperty<bool>("cam360RotateControlNew", true);
+        public ConfigProperty<bool> ThirdPerson = new ConfigProperty<bool>("thirdPerson", true);
+        public ConfigProperty<bool> ShowThirdPersonCamera = new ConfigProperty<bool>("showThirdPersonCamera", true);
+        public ConfigProperty<bool> Use360Camera = new ConfigProperty<bool>("use360Camera", false);
+        public ConfigProperty<float> PosX = new ConfigProperty<float>("posx", 0);
+        public ConfigProperty<float> PosY = new ConfigProperty<float>("posy", 2.5f);
+        public ConfigProperty<float> PosZ = new ConfigProperty<float>("posz", -2);
+        public ConfigProperty<float> AngX = new ConfigProperty<float>("angx", 15);
+        public ConfigProperty<float> AngY = new ConfigProperty<float>("angy", 0);
+        public ConfigProperty<float> AngZ = new ConfigProperty<float>("angz", 0);
+        public ConfigProperty<float> FirstPersonPosOffsetX = new ConfigProperty<float>("firstPersonPosOffsetX", 0);
+        public ConfigProperty<float> FirstPersonPosOffsetY = new ConfigProperty<float>("firstPersonPosOffsetY", 0);
+        public ConfigProperty<float> FirstPersonPosOffsetZ = new ConfigProperty<float>("firstPersonPosOffsetZ", 0);
+        public ConfigProperty<float> FirstPersonRotOffsetX = new ConfigProperty<float>("firstPersonRotOffsetX", 0);
+        public ConfigProperty<float> FirstPersonRotOffsetY = new ConfigProperty<float>("firstPersonRotOffsetY", 0);
+        public ConfigProperty<float> FirstPersonRotOffsetZ = new ConfigProperty<float>("firstPersonRotOffsetZ", 0);
+        public ConfigProperty<float> Cam360ForwardOffset = new ConfigProperty<float>("cam360ForwardOffset", -2);
+        public ConfigProperty<float> Cam360XTilt = new ConfigProperty<float>("cam360XTilt", 10);
+        public ConfigProperty<float> Cam360ZTilt = new ConfigProperty<float>("cam360ZTilt", 0);
+        public ConfigProperty<float> Cam360YTilt = new ConfigProperty<float>("cam360YTilt", 0);
+        public ConfigProperty<float> Cam360UpOffset = new ConfigProperty<float>("cam360UpOffset", 2.2f);
+        public ConfigProperty<float> Cam360RightOffset = new ConfigProperty<float>("cam360RightOffset", 0);
+        public ConfigProperty<int> ScreenWidth = new ConfigProperty<int>("screenWidth", 1920);
+        public ConfigProperty<int> ScreenHeight = new ConfigProperty<int>("screenHeight", 1080);
+        public ConfigProperty<int> ScreenPosX = new ConfigProperty<int>("screenPosX", 0);
+        public ConfigProperty<int> ScreenPosY = new ConfigProperty<int>("screenPosY", 0);
+        public ConfigProperty<int> MultiPlayerNumber = new ConfigProperty<int>("MultiPlayerNumber", 1);
+        public ConfigProperty<bool> DisplayMultiPlayerNameInfo = new ConfigProperty<bool>("DisplayMultiPlayerNameInfo", true);
+        public ConfigProperty<int> Layer = new ConfigProperty<int>("layer", -1000);
+        public ConfigProperty<bool> FitToCanvas = new ConfigProperty<bool>("fitToCanvas", false);
+        public ConfigProperty<bool> TransparentWalls = new ConfigProperty<bool>("transparentWalls", true);
+        public ConfigProperty<bool> ForceFirstPersonUpRight = new ConfigProperty<bool>("forceFirstPersonUpRight", false);
+        public ConfigProperty<bool> Avatar = new ConfigProperty<bool>("avatar", true);
+        public ConfigProperty<string> Debris = new ConfigProperty<string>("HideUI", "link");
+        public ConfigProperty<bool> HideUi = new ConfigProperty<bool>("avatar", false);
+        public ConfigProperty<string> MovementScriptPath = new ConfigProperty<string>("movementScriptPath", "");
+        public ConfigProperty<bool> MovementAudioSync = new ConfigProperty<bool>("movementAudioSync", true);
 
         public static CameraPlusConfig FromFile(string filePath, View view, ILogger logger)
         {
             return new CameraPlusConfig(filePath, view, logger);
+        }
+        public void Destroy()
+        {
+            _watcher.Changed -= FileChangeEvent;
         }
 
         private CameraPlusConfig(string filePath, View view, ILogger logger, bool createRestoreBackup = true)
@@ -73,133 +82,53 @@ namespace Mover
         private void LoadFile(bool createRestoreBackup = true)
         {
             Factory.WaitUntilFileIsNotLocked(_filePath);
+            var array = File.ReadAllLines(_filePath).Select(x => x.Split('=')).ToList();
             
-            foreach (var line in File.ReadAllLines(_filePath))
-            {
-                var split = line.Split('=');
-                var value = split[1];
-                switch (split[0])
-                {
-                    case "fov":
-                        Fov = float.Parse(value);
-                        break;
-                    case "antiAliasing":
-                        AntiAliasing = int.Parse(value);
-                        break;
-                    case "renderScale":
-                        RenderScale = float.Parse(value);
-                        break;
-                    case "positionSmooth":
-                        PositionSmooth = float.Parse(value);
-                        break;
-                    case "rotationSmooth":
-                        RotationSmooth = float.Parse(value);
-                        break;
-                    case "cam360Smoothness":
-                        Cam360Smoothness = float.Parse(value);
-                        break;
-                    case "cam360RotateControlNew":
-                        Cam360RotateControlNew = ToBoolValue(value);
-                        break;
-                    case "thirdPerson":
-                        ThirdPerson = ToBoolValue(value);
-                        break;
-                    case "showThirdPersonCamera":
-                        ShowThirdPersonCamera = ToBoolValue(value);
-                        break;
-                    case "use360Camera":
-                        Use360Camera = ToBoolValue(value);
-                        break;
-                    case "posx":
-                        PosX = float.Parse(value);
-                        break;
-                    case "posy":
-                        PosY = float.Parse(value);
-                        break;
-                    case "posz":
-                        PosZ = float.Parse(value);
-                        break;
-                    case "angx":
-                        AngX = float.Parse(value);
-                        break;
-                    case "angy":
-                        AngY = float.Parse(value);
-                        break;
-                    case "angz":
-                        AngZ = float.Parse(value);
-                        break;
-                    case "firstPersonPosOffsetX":
-                        FirstPersonPosOffsetX = float.Parse(value);
-                        break;
-                    case "firstPersonPosOffsetY":
-                        FirstPersonPosOffsetY = float.Parse(value);
-                        break;
-                    case "firstPersonPosOffsetZ":
-                        FirstPersonPosOffsetZ = float.Parse(value);
-                        break;
-                    case "firstPersonRotOffsetX":
-                        FirstPersonRotOffsetX = float.Parse(value);
-                        break;
-                    case "firstPersonRotOffsetY":
-                        FirstPersonRotOffsetY = float.Parse(value);
-                        break;
-                    case "firstPersonRotOffsetZ":
-                        FirstPersonRotOffsetZ = float.Parse(value);
-                        break;
-                    case "cam360ForwardOffset":
-                        Cam360ForwardOffset = float.Parse(value);
-                        break;
-                    case "cam360XTilt":
-                        Cam360XTilt = float.Parse(value);
-                        break;
-                    case "cam360YTilt":
-                        Cam360YTilt = float.Parse(value);
-                        break;
-                    case "cam360ZTilt":
-                        Cam360ZTilt = float.Parse(value);
-                        break;
-                    case "cam360UpOffset":
-                        Cam360UpOffset = float.Parse(value);
-                        break;
-                    case "cam360RightOffset":
-                        Cam360RightOffset = float.Parse(value);
-                        break;
-                    case "screenWidth":
-                        ScreenWidth = int.Parse(value);
-                        break;
-                    case "screenHeight":
-                        ScreenHeight = int.Parse(value);
-                        break;
-                    case "screenPosX":
-                        ScreenPosX = int.Parse(value);
-                        break;
-                    case "screenPosY":
-                        ScreenPosY = int.Parse(value);
-                        break;
-                    case "layer":
-                        Layer = int.Parse(value);
-                        break;
-                    case "fitToCanvas":
-                        FitToCanvas = ToBoolValue(value);
-                        break;
-                    case "transparentWalls":
-                        TransparentWalls = ToBoolValue(value);
-                        break;
-                    case "forceFirstPersonUpRight":
-                        ForceFirstPersonUpRight = ToBoolValue(value);
-                        break;
-                    case "avatar":
-                        Avatar = ToBoolValue(value);
-                        break;
-                    case "debri":
-                        Debris = value;
-                        break;
-                    case "movementScriptPath":
-                        MovementScriptPath = value;
-                        break;
-                }
-            }
-
+            LockScreen.LoadFromStr(array);
+            Fov.LoadFromStr(array);
+            AntiAliasing.LoadFromStr(array);
+            RenderScale.LoadFromStr(array);
+            PositionSmooth.LoadFromStr(array);
+            RotationSmooth.LoadFromStr(array);
+            Cam360Smoothness.LoadFromStr(array);
+            Cam360RotateControlNew.LoadFromStr(array);
+            ThirdPerson.LoadFromStr(array);
+            ShowThirdPersonCamera.LoadFromStr(array);
+            Use360Camera.LoadFromStr(array);
+            PosX.LoadFromStr(array);
+            PosY.LoadFromStr(array);
+            PosZ.LoadFromStr(array);
+            AngX.LoadFromStr(array);
+            AngY.LoadFromStr(array);
+            AngZ.LoadFromStr(array);
+            FirstPersonPosOffsetX.LoadFromStr(array);
+            FirstPersonPosOffsetY.LoadFromStr(array);
+            FirstPersonPosOffsetZ.LoadFromStr(array);
+            FirstPersonRotOffsetX.LoadFromStr(array);
+            FirstPersonRotOffsetY.LoadFromStr(array);
+            FirstPersonRotOffsetZ.LoadFromStr(array);
+            Cam360ForwardOffset.LoadFromStr(array);
+            Cam360XTilt.LoadFromStr(array);
+            Cam360ZTilt.LoadFromStr(array);
+            Cam360YTilt.LoadFromStr(array);
+            Cam360UpOffset.LoadFromStr(array);
+            Cam360RightOffset.LoadFromStr(array);
+            ScreenWidth.LoadFromStr(array);
+            ScreenHeight.LoadFromStr(array);
+            ScreenPosX.LoadFromStr(array);
+            ScreenPosY.LoadFromStr(array);
+            MultiPlayerNumber.LoadFromStr(array);
+            DisplayMultiPlayerNameInfo.LoadFromStr(array);
+            Layer.LoadFromStr(array);
+            FitToCanvas.LoadFromStr(array);
+            TransparentWalls.LoadFromStr(array);
+            ForceFirstPersonUpRight.LoadFromStr(array);
+            Avatar.LoadFromStr(array);
+            Debris.LoadFromStr(array);
+            HideUi.LoadFromStr(array);
+            MovementScriptPath.LoadFromStr(array);
+            MovementAudioSync.LoadFromStr(array);
+            
             if (createRestoreBackup)
             {
                 _backup = new CameraPlusConfig(_filePath, View, _logger, false);
@@ -216,16 +145,6 @@ namespace Mover
             _logger.Log($"(re)loaded {createRestoreBackupString}{Path.GetFileName(_filePath)}");
         }
 
-        public void Destroy()
-        {
-            _watcher.Changed -= FileChangeEvent;
-        }
-
-        private bool ToBoolValue(string value)
-        {
-            return value.ToLower() == "true";
-        }
-
         private void FileChangeEvent(object sender, FileSystemEventArgs args)
         {
             //var conf = _cameras.First(x => x.FilePath == args.FullPath);
@@ -240,49 +159,11 @@ namespace Mover
             {
                 return;
             }
-            
-            var linesToWrite = new List<string>
-            {
-                "fov=" + Fov,
-                "antiAliasing=" + AntiAliasing,
-                "renderScale=" + RenderScale,
-                "positionSmooth=" + PositionSmooth,
-                "rotationSmooth=" + RotationSmooth,
-                "cam360Smoothness=" + Cam360Smoothness,
-                "cam360RotateControlNew=" + ToBoolString(Cam360RotateControlNew),
-                "thirdPerson=" + ToBoolString(ThirdPerson),
-                "showThirdPersonCamera=" + ToBoolString(ShowThirdPersonCamera),
-                "use360Camera=" + ToBoolString(Use360Camera),
-                "posx=" + PosX,
-                "posy=" + PosY,
-                "posz=" + PosZ,
-                "angx=" + AngX,
-                "angy=" + AngY,
-                "angz=" + AngZ,
-                "firstPersonPosOffsetX=" + FirstPersonPosOffsetX,
-                "firstPersonPosOffsetY=" + FirstPersonPosOffsetY,
-                "firstPersonPosOffsetZ=" + FirstPersonPosOffsetZ,
-                "firstPersonRotOffsetX=" + FirstPersonRotOffsetX,
-                "firstPersonRotOffsetY=" + FirstPersonRotOffsetY,
-                "firstPersonRotOffsetZ=" + FirstPersonRotOffsetZ,
-                "cam360ForwardOffset=" + Cam360ForwardOffset,
-                "cam360XTilt=" + Cam360XTilt,
-                "cam360ZTilt=" + Cam360ZTilt,
-                "cam360YTilt=" + Cam360YTilt,
-                "cam360UpOffset=" + Cam360UpOffset,
-                "cam360RightOffset=" + Cam360RightOffset,
-                "screenWidth=" + ScreenWidth,
-                "screenHeight=" + ScreenHeight,
-                "screenPosX=" + ScreenPosX,
-                "screenPosY=" + ScreenPosY,
-                "layer=" + Layer,
-                "fitToCanvas=" + ToBoolString(FitToCanvas),
-                "transparentWalls=" + ToBoolString(TransparentWalls),
-                "forceFirstPersonUpRight=" + ToBoolString(ForceFirstPersonUpRight),
-                "avatar=" +  ToBoolString(Avatar),
-                "debri=" + Debris,
-                "movementScriptPath=" + MovementScriptPath,
-            };
+
+            var linesToWrite = GetType()
+                .GetProperties(BindingFlags.Public)
+                .Where(x => x.PropertyType == typeof(ConfigProperty<>))
+                .Select(x => x.PropertyType.GetMethod("GetSaveStr")?.Invoke(x.GetValue(null), null));
 
             Factory.WaitUntilFileIsNotLocked(_filePath);
             File.WriteAllText(_filePath, string.Join(Environment.NewLine, linesToWrite));
@@ -295,11 +176,14 @@ namespace Mover
                 return;
             }
 
+            LockScreen = _backup.LockScreen;
             Fov = _backup.Fov;
             AntiAliasing = _backup.AntiAliasing;
             RenderScale = _backup.RenderScale;
             PositionSmooth = _backup.PositionSmooth;
             RotationSmooth = _backup.RotationSmooth;
+            Cam360Smoothness = _backup.Cam360Smoothness;
+            Cam360RotateControlNew = _backup.Cam360RotateControlNew;
             ThirdPerson = _backup.ThirdPerson;
             ShowThirdPersonCamera = _backup.ShowThirdPersonCamera;
             Use360Camera = _backup.Use360Camera;
@@ -325,17 +209,24 @@ namespace Mover
             ScreenHeight = _backup.ScreenHeight;
             ScreenPosX = _backup.ScreenPosX;
             ScreenPosY = _backup.ScreenPosY;
+            MultiPlayerNumber = _backup.MultiPlayerNumber;
+            DisplayMultiPlayerNameInfo = _backup.DisplayMultiPlayerNameInfo;
             Layer = _backup.Layer;
             FitToCanvas = _backup.FitToCanvas;
             TransparentWalls = _backup.TransparentWalls;
             ForceFirstPersonUpRight = _backup.ForceFirstPersonUpRight;
             Avatar = _backup.Avatar;
             Debris = _backup.Debris;
+            HideUi = _backup.HideUi;
             MovementScriptPath = _backup.MovementScriptPath;
+            MovementAudioSync = _backup.MovementAudioSync;
 
             Changed = true;
         }
-
-        private string ToBoolString(bool input) => input ? "True" : "False";
+        
+        private static bool ToBoolValue(string value)
+        {
+            return value.ToLower() == "true";
+        }
     }
 }

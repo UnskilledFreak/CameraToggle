@@ -56,52 +56,49 @@ namespace GUI
 
         private void button1_Click(object sender, EventArgs e)
         {
-            RunCommand(_mover.RestoreAllCams);
+            RunCommand(Factory.CommandRestore);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            RunCommand(_mover.CmdFront);
+            RunCommand(Factory.CommandFront);
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            RunCommand(() =>
-            {
-                _mover.CmdFirstPerson(false);
-            });
+            RunCommand(Factory.CommandFirstPerson);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            RunCommand(() =>
-            {
-                _mover.CmdFirstPerson(true);
-            });
+            RunCommand(Factory.CommandFirstPersonSmallCams);
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            RunCommand(() =>
-            {
-                _mover.Destroy();
-                _mover = new Factory(_logger);
-                _mover.SetBeatSaberPath(textBox2.Text);
-            });
+            _noTick = true;
+            UpdateGui(false);
+            
+            _mover.RestoreAllCams();
+            _mover.Destroy();
+            _mover = new Factory(_logger);
+            _mover.SetBeatSaberPath(textBox2.Text);
+            
+            UpdateGui(true);
+            _noTick = false;
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            RunCommand(_mover.CmdToggle360);
+            RunCommand(Factory.CommandToggle360);
         }
 
-        private void RunCommand(Action command)
+        private void RunCommand(string command)
         {
             _noTick = true;
             UpdateGui(false);
             _mover.RestoreAllCams();
-            command.Invoke();
-            _mover.SaveAllCams();
+            _mover.ParseCommands(command);
             UpdateGui(true);
             _noTick = false;
         }
