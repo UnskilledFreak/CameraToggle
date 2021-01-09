@@ -43,9 +43,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 12);
+            this.button1.Location = new System.Drawing.Point(10, 10);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(117, 72);
+            this.button1.Size = new System.Drawing.Size(100, 62);
             this.button1.TabIndex = 0;
             this.button1.Text = "Restore / Back";
             this.button1.UseVisualStyleBackColor = true;
@@ -53,9 +53,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(135, 12);
+            this.button2.Location = new System.Drawing.Point(116, 10);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(117, 72);
+            this.button2.Size = new System.Drawing.Size(100, 62);
             this.button2.TabIndex = 1;
             this.button2.Text = "Front";
             this.button2.UseVisualStyleBackColor = true;
@@ -63,9 +63,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(258, 12);
+            this.button3.Location = new System.Drawing.Point(221, 10);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(117, 72);
+            this.button3.Size = new System.Drawing.Size(100, 62);
             this.button3.TabIndex = 2;
             this.button3.Text = "FPS";
             this.button3.UseVisualStyleBackColor = true;
@@ -73,9 +73,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(381, 12);
+            this.button4.Location = new System.Drawing.Point(327, 10);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(117, 72);
+            this.button4.Size = new System.Drawing.Size(100, 62);
             this.button4.TabIndex = 3;
             this.button4.Text = "small FPS";
             this.button4.UseVisualStyleBackColor = true;
@@ -83,9 +83,9 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(504, 12);
+            this.button5.Location = new System.Drawing.Point(432, 10);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(117, 72);
+            this.button5.Size = new System.Drawing.Size(100, 62);
             this.button5.TabIndex = 5;
             this.button5.Text = "Reload Cams";
             this.button5.UseVisualStyleBackColor = true;
@@ -93,19 +93,19 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 90);
+            this.textBox1.Location = new System.Drawing.Point(10, 78);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(731, 273);
+            this.textBox1.Size = new System.Drawing.Size(627, 237);
             this.textBox1.TabIndex = 6;
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(626, 12);
+            this.button6.Location = new System.Drawing.Point(537, 10);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(117, 72);
+            this.button6.Size = new System.Drawing.Size(100, 62);
             this.button6.TabIndex = 7;
             this.button6.Text = "360";
             this.button6.UseVisualStyleBackColor = true;
@@ -113,9 +113,9 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(12, 369);
+            this.textBox2.Location = new System.Drawing.Point(10, 320);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(732, 23);
+            this.textBox2.Size = new System.Drawing.Size(628, 20);
             this.textBox2.TabIndex = 8;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
@@ -126,9 +126,9 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(756, 404);
+            this.ClientSize = new System.Drawing.Size(648, 350);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.textBox1);
@@ -138,7 +138,7 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
-            this.Text = "CPEM_GUI";
+            this.Text = "CameraToggle";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

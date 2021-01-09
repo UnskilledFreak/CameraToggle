@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <RootNamespace>CameraPlusExternalMover</RootNamespace>
+        <RootNamespace>Console</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

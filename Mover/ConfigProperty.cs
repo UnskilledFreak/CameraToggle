@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Mover
@@ -28,21 +29,14 @@ namespace Mover
             {
                 bool _ => stringValue.ToLower() == "true",
                 int _ => Convert.ToInt32(stringValue),
-                float _ => Convert.ToDecimal(stringValue),
+                float _ => (float)Convert.ToDecimal(stringValue),
                 _ => stringValue
             };
         }
 
         public string GetSaveStr()
         {
-            var propString = Value switch
-            {
-                bool property => property ? "True" : "False",
-                string property2 => string.Concat("\"", property2, "\""),
-                _ => Value.ToString()
-            };
-            
-            return string.Concat(Key, "=", propString);
+            return string.Concat(Key, "=", Value);
         }
 
         public override string ToString()

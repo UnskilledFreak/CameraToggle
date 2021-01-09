@@ -65,6 +65,7 @@ namespace Mover
         {
             return new CameraPlusConfig(filePath, view, logger);
         }
+
         public void Destroy()
         {
             _watcher.Changed -= FileChangeEvent;
@@ -76,7 +77,7 @@ namespace Mover
             View = view;
             _logger = logger;
             Changed = false;
-            
+
             LoadFile(createRestoreBackup);
         }
 
@@ -84,7 +85,7 @@ namespace Mover
         {
             Factory.WaitUntilFileIsNotLocked(_filePath);
             var array = File.ReadAllLines(_filePath).Select(x => x.Split('=')).ToList();
-            
+
             // todo :: reflection via fields
             LockScreen.LoadFromStr(array);
             Fov.LoadFromStr(array);
@@ -130,7 +131,7 @@ namespace Mover
             HideUi.LoadFromStr(array);
             MovementScriptPath.LoadFromStr(array);
             MovementAudioSync.LoadFromStr(array);
-            
+
             if (createRestoreBackup)
             {
                 _backup = new CameraPlusConfig(_filePath, View, _logger, false);
@@ -163,53 +164,52 @@ namespace Mover
             }
 
             // todo :: reflection via fields
-            var linesToWrite = new List<string>
-            {
-                LockScreen.GetSaveStr(),
-                Fov.GetSaveStr(),
-                AntiAliasing.GetSaveStr(),
-                RenderScale.GetSaveStr(),
-                PositionSmooth.GetSaveStr(),
-                RotationSmooth.GetSaveStr(),
-                Cam360Smoothness.GetSaveStr(),
-                Cam360RotateControlNew.GetSaveStr(),
-                ThirdPerson.GetSaveStr(),
-                ShowThirdPersonCamera.GetSaveStr(),
-                Use360Camera.GetSaveStr(),
-                PosX.GetSaveStr(),
-                PosY.GetSaveStr(),
-                PosZ.GetSaveStr(),
-                AngX.GetSaveStr(),
-                AngY.GetSaveStr(),
-                AngZ.GetSaveStr(),
-                FirstPersonPosOffsetX.GetSaveStr(),
-                FirstPersonPosOffsetY.GetSaveStr(),
-                FirstPersonPosOffsetZ.GetSaveStr(),
-                FirstPersonRotOffsetX.GetSaveStr(),
-                FirstPersonRotOffsetY.GetSaveStr(),
-                FirstPersonRotOffsetZ.GetSaveStr(),
-                Cam360ForwardOffset.GetSaveStr(),
-                Cam360XTilt.GetSaveStr(),
-                Cam360ZTilt.GetSaveStr(),
-                Cam360YTilt.GetSaveStr(),
-                Cam360UpOffset.GetSaveStr(),
-                Cam360RightOffset.GetSaveStr(),
-                ScreenWidth.GetSaveStr(),
-                ScreenHeight.GetSaveStr(),
-                ScreenPosX.GetSaveStr(),
-                ScreenPosY.GetSaveStr(),
-                MultiPlayerNumber.GetSaveStr(),
-                DisplayMultiPlayerNameInfo.GetSaveStr(),
-                Layer.GetSaveStr(),
-                FitToCanvas.GetSaveStr(),
-                TransparentWalls.GetSaveStr(),
-                ForceFirstPersonUpRight.GetSaveStr(),
-                Avatar.GetSaveStr(),
-                Debris.GetSaveStr(),
-                HideUi.GetSaveStr(),
-                MovementScriptPath.GetSaveStr(),
-                MovementAudioSync.GetSaveStr()
-            };
+            var linesToWrite = new List<string>();
+
+            linesToWrite.Add(LockScreen.GetSaveStr());
+            linesToWrite.Add(Fov.GetSaveStr());
+            linesToWrite.Add(AntiAliasing.GetSaveStr());
+            linesToWrite.Add(RenderScale.GetSaveStr());
+            linesToWrite.Add(PositionSmooth.GetSaveStr());
+            linesToWrite.Add(RotationSmooth.GetSaveStr());
+            linesToWrite.Add(Cam360Smoothness.GetSaveStr());
+            linesToWrite.Add(Cam360RotateControlNew.GetSaveStr());
+            linesToWrite.Add(ThirdPerson.GetSaveStr());
+            linesToWrite.Add(ShowThirdPersonCamera.GetSaveStr());
+            linesToWrite.Add(Use360Camera.GetSaveStr());
+            linesToWrite.Add(PosX.GetSaveStr());
+            linesToWrite.Add(PosY.GetSaveStr());
+            linesToWrite.Add(PosZ.GetSaveStr());
+            linesToWrite.Add(AngX.GetSaveStr());
+            linesToWrite.Add(AngY.GetSaveStr());
+            linesToWrite.Add(AngZ.GetSaveStr());
+            linesToWrite.Add(FirstPersonPosOffsetX.GetSaveStr());
+            linesToWrite.Add(FirstPersonPosOffsetY.GetSaveStr());
+            linesToWrite.Add(FirstPersonPosOffsetZ.GetSaveStr());
+            linesToWrite.Add(FirstPersonRotOffsetX.GetSaveStr());
+            linesToWrite.Add(FirstPersonRotOffsetY.GetSaveStr());
+            linesToWrite.Add(FirstPersonRotOffsetZ.GetSaveStr());
+            linesToWrite.Add(Cam360ForwardOffset.GetSaveStr());
+            linesToWrite.Add(Cam360XTilt.GetSaveStr());
+            linesToWrite.Add(Cam360ZTilt.GetSaveStr());
+            linesToWrite.Add(Cam360YTilt.GetSaveStr());
+            linesToWrite.Add(Cam360UpOffset.GetSaveStr());
+            linesToWrite.Add(Cam360RightOffset.GetSaveStr());
+            linesToWrite.Add(ScreenWidth.GetSaveStr());
+            linesToWrite.Add(ScreenHeight.GetSaveStr());
+            linesToWrite.Add(ScreenPosX.GetSaveStr());
+            linesToWrite.Add(ScreenPosY.GetSaveStr());
+            linesToWrite.Add(MultiPlayerNumber.GetSaveStr());
+            linesToWrite.Add(DisplayMultiPlayerNameInfo.GetSaveStr());
+            linesToWrite.Add(Layer.GetSaveStr());
+            linesToWrite.Add(FitToCanvas.GetSaveStr());
+            linesToWrite.Add(TransparentWalls.GetSaveStr());
+            linesToWrite.Add(ForceFirstPersonUpRight.GetSaveStr());
+            linesToWrite.Add(Avatar.GetSaveStr());
+            linesToWrite.Add(Debris.GetSaveStr());
+            linesToWrite.Add(HideUi.GetSaveStr());
+            linesToWrite.Add(MovementScriptPath.GetSaveStr());
+            linesToWrite.Add(MovementAudioSync.GetSaveStr());
 
             Factory.WaitUntilFileIsNotLocked(_filePath);
             File.WriteAllText(_filePath, string.Join(Environment.NewLine, linesToWrite));
@@ -222,54 +222,54 @@ namespace Mover
                 return;
             }
 
-            LockScreen = _backup.LockScreen;
-            Fov = _backup.Fov;
-            AntiAliasing = _backup.AntiAliasing;
-            RenderScale = _backup.RenderScale;
-            PositionSmooth = _backup.PositionSmooth;
-            RotationSmooth = _backup.RotationSmooth;
-            Cam360Smoothness = _backup.Cam360Smoothness;
-            Cam360RotateControlNew = _backup.Cam360RotateControlNew;
-            ThirdPerson = _backup.ThirdPerson;
-            ShowThirdPersonCamera = _backup.ShowThirdPersonCamera;
-            Use360Camera = _backup.Use360Camera;
-            PosX = _backup.PosX;
-            PosY = _backup.PosY;
-            PosZ = _backup.PosZ;
-            AngX = _backup.AngX;
-            AngY = _backup.AngY;
-            AngZ = _backup.AngZ;
-            FirstPersonPosOffsetX = _backup.FirstPersonPosOffsetX;
-            FirstPersonPosOffsetY = _backup.FirstPersonPosOffsetY;
-            FirstPersonPosOffsetZ = _backup.FirstPersonPosOffsetZ;
-            FirstPersonRotOffsetX = _backup.FirstPersonRotOffsetX;
-            FirstPersonRotOffsetY = _backup.FirstPersonRotOffsetY;
-            FirstPersonRotOffsetZ = _backup.FirstPersonRotOffsetZ;
-            Cam360ForwardOffset = _backup.Cam360ForwardOffset;
-            Cam360XTilt = _backup.Cam360XTilt;
-            Cam360ZTilt = _backup.Cam360ZTilt;
-            Cam360YTilt = _backup.Cam360YTilt;
-            Cam360UpOffset = _backup.Cam360UpOffset;
-            Cam360RightOffset = _backup.Cam360RightOffset;
-            ScreenWidth = _backup.ScreenWidth;
-            ScreenHeight = _backup.ScreenHeight;
-            ScreenPosX = _backup.ScreenPosX;
-            ScreenPosY = _backup.ScreenPosY;
-            MultiPlayerNumber = _backup.MultiPlayerNumber;
-            DisplayMultiPlayerNameInfo = _backup.DisplayMultiPlayerNameInfo;
-            Layer = _backup.Layer;
-            FitToCanvas = _backup.FitToCanvas;
-            TransparentWalls = _backup.TransparentWalls;
-            ForceFirstPersonUpRight = _backup.ForceFirstPersonUpRight;
-            Avatar = _backup.Avatar;
-            Debris = _backup.Debris;
-            HideUi = _backup.HideUi;
-            MovementScriptPath = _backup.MovementScriptPath;
-            MovementAudioSync = _backup.MovementAudioSync;
+            LockScreen.Value = _backup.LockScreen.Value;
+            Fov.Value = _backup.Fov.Value;
+            AntiAliasing.Value = _backup.AntiAliasing.Value;
+            RenderScale.Value = _backup.RenderScale.Value;
+            PositionSmooth.Value = _backup.PositionSmooth.Value;
+            RotationSmooth.Value = _backup.RotationSmooth.Value;
+            Cam360Smoothness.Value = _backup.Cam360Smoothness.Value;
+            Cam360RotateControlNew.Value = _backup.Cam360RotateControlNew.Value;
+            ThirdPerson.Value = _backup.ThirdPerson.Value;
+            ShowThirdPersonCamera.Value = _backup.ShowThirdPersonCamera.Value;
+            Use360Camera.Value = _backup.Use360Camera.Value;
+            PosX.Value = _backup.PosX.Value;
+            PosY.Value = _backup.PosY.Value;
+            PosZ.Value = _backup.PosZ.Value;
+            AngX.Value = _backup.AngX.Value;
+            AngY.Value = _backup.AngY.Value;
+            AngZ.Value = _backup.AngZ.Value;
+            FirstPersonPosOffsetX.Value = _backup.FirstPersonPosOffsetX.Value;
+            FirstPersonPosOffsetY.Value = _backup.FirstPersonPosOffsetY.Value;
+            FirstPersonPosOffsetZ.Value = _backup.FirstPersonPosOffsetZ.Value;
+            FirstPersonRotOffsetX.Value = _backup.FirstPersonRotOffsetX.Value;
+            FirstPersonRotOffsetY.Value = _backup.FirstPersonRotOffsetY.Value;
+            FirstPersonRotOffsetZ.Value = _backup.FirstPersonRotOffsetZ.Value;
+            Cam360ForwardOffset.Value = _backup.Cam360ForwardOffset.Value;
+            Cam360XTilt.Value = _backup.Cam360XTilt.Value;
+            Cam360ZTilt.Value = _backup.Cam360ZTilt.Value;
+            Cam360YTilt.Value = _backup.Cam360YTilt.Value;
+            Cam360UpOffset.Value = _backup.Cam360UpOffset.Value;
+            Cam360RightOffset.Value = _backup.Cam360RightOffset.Value;
+            ScreenWidth.Value = _backup.ScreenWidth.Value;
+            ScreenHeight.Value = _backup.ScreenHeight.Value;
+            ScreenPosX.Value = _backup.ScreenPosX.Value;
+            ScreenPosY.Value = _backup.ScreenPosY.Value;
+            MultiPlayerNumber.Value = _backup.MultiPlayerNumber.Value;
+            DisplayMultiPlayerNameInfo.Value = _backup.DisplayMultiPlayerNameInfo.Value;
+            Layer.Value = _backup.Layer.Value;
+            FitToCanvas.Value = _backup.FitToCanvas.Value;
+            TransparentWalls.Value = _backup.TransparentWalls.Value;
+            ForceFirstPersonUpRight.Value = _backup.ForceFirstPersonUpRight.Value;
+            Avatar.Value = _backup.Avatar.Value;
+            Debris.Value = _backup.Debris.Value;
+            HideUi.Value = _backup.HideUi.Value;
+            MovementScriptPath.Value = _backup.MovementScriptPath.Value;
+            MovementAudioSync.Value = _backup.MovementAudioSync.Value;
 
             Changed = true;
         }
-        
+
         private static bool ToBoolValue(string value)
         {
             return value.ToLower() == "true";

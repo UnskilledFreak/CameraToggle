@@ -327,73 +327,48 @@ namespace Mover
             config2.Changed = true;
         }
 
+        private static void ToggleProperty<T>(ConfigProperty<T> from, ConfigProperty<T> to)
+        {
+            var tmp = from.Value;
+            from.Value = to.Value;
+            to.Value = tmp;
+        }
+
         private static void Toggle(CameraPlusConfig fromCam, CameraPlusConfig toCam)
         {
-            var tmpTransparentWalls = fromCam.TransparentWalls;
-            fromCam.TransparentWalls = toCam.TransparentWalls;
-            toCam.TransparentWalls = tmpTransparentWalls;
-
-            // swap 360 settings
-            var tmpCam360Smoothness = fromCam.Cam360Smoothness;
-            var tmpUse360Camera = fromCam.Use360Camera;
-            var tmpCam360ForwardOffset = fromCam.Cam360ForwardOffset;
-            var tmpCam360XTilt = fromCam.Cam360XTilt;
-            var tmpCam360ZTilt = fromCam.Cam360ZTilt;
-            var tmpCam360YTilt = fromCam.Cam360YTilt;
-            var tmpCam360UpOffset = fromCam.Cam360UpOffset;
-            var tmpCam360RightOffset = fromCam.Cam360RightOffset;
-
-            fromCam.Cam360Smoothness = toCam.Cam360Smoothness;
-            fromCam.Use360Camera = toCam.Use360Camera;
-            fromCam.Cam360ForwardOffset = toCam.Cam360ForwardOffset;
-            fromCam.Cam360XTilt = toCam.Cam360XTilt;
-            fromCam.Cam360ZTilt = toCam.Cam360ZTilt;
-            fromCam.Cam360YTilt = toCam.Cam360YTilt;
-            fromCam.Cam360UpOffset = toCam.Cam360UpOffset;
-            fromCam.Cam360RightOffset = toCam.Cam360RightOffset;
-
-            toCam.Cam360Smoothness = tmpCam360Smoothness;
-            toCam.Use360Camera = tmpUse360Camera;
-            toCam.Cam360ForwardOffset = tmpCam360ForwardOffset;
-            toCam.Cam360XTilt = tmpCam360XTilt;
-            toCam.Cam360ZTilt = tmpCam360ZTilt;
-            toCam.Cam360YTilt = tmpCam360YTilt;
-            toCam.Cam360UpOffset = tmpCam360UpOffset;
-            toCam.Cam360RightOffset = tmpCam360RightOffset;
-            
-            // swap global position
-            var tmpPositionSmooth = fromCam.PositionSmooth;
-            var tmpRotationSmooth = fromCam.RotationSmooth;
-            var tmpThirdPerson = fromCam.ThirdPerson;
-            var tmpShowThirdPersonCamera = fromCam.ShowThirdPersonCamera;
-            var tmpPosX = fromCam.PosX;
-            var tmpPosY = fromCam.PosY;
-            var tmpPosZ = fromCam.PosZ;
-            var tmpAngX = fromCam.AngX;
-            var tmpAngY = fromCam.AngY;
-            var tmpAngZ = fromCam.AngZ;
-
-            fromCam.PositionSmooth = toCam.PositionSmooth;
-            fromCam.RotationSmooth = toCam.RotationSmooth;
-            fromCam.ThirdPerson = toCam.ThirdPerson;
-            fromCam.ShowThirdPersonCamera = toCam.ShowThirdPersonCamera;
-            fromCam.PosX = toCam.PosX;
-            fromCam.PosY = toCam.PosY;
-            fromCam.PosZ = toCam.PosZ;
-            fromCam.AngX = toCam.AngX;
-            fromCam.AngY = toCam.AngY;
-            fromCam.AngZ = toCam.AngZ;
-
-            toCam.PositionSmooth = tmpPositionSmooth;
-            toCam.RotationSmooth = tmpRotationSmooth;
-            toCam.ThirdPerson = tmpThirdPerson;
-            toCam.ShowThirdPersonCamera = tmpShowThirdPersonCamera;
-            toCam.PosX = tmpPosX;
-            toCam.PosY = tmpPosY;
-            toCam.PosZ = tmpPosZ;
-            toCam.AngX = tmpAngX;
-            toCam.AngY = tmpAngY;
-            toCam.AngZ = tmpAngZ;
+            // swap settings
+            ToggleProperty(fromCam.Fov, toCam.Fov);
+            ToggleProperty(fromCam.PositionSmooth, toCam.PositionSmooth);
+            ToggleProperty(fromCam.RotationSmooth, toCam.RotationSmooth);
+            ToggleProperty(fromCam.Cam360Smoothness, toCam.Cam360Smoothness);
+            ToggleProperty(fromCam.Cam360RotateControlNew, toCam.Cam360RotateControlNew);
+            ToggleProperty(fromCam.ThirdPerson, toCam.ThirdPerson);
+            ToggleProperty(fromCam.ShowThirdPersonCamera, toCam.ShowThirdPersonCamera);
+            ToggleProperty(fromCam.Use360Camera, toCam.Use360Camera);
+            ToggleProperty(fromCam.PosX, toCam.PosX);
+            ToggleProperty(fromCam.PosY, toCam.PosY);
+            ToggleProperty(fromCam.PosZ, toCam.PosZ);
+            ToggleProperty(fromCam.AngX, toCam.AngX);
+            ToggleProperty(fromCam.AngY, toCam.AngY);
+            ToggleProperty(fromCam.AngZ, toCam.AngZ);
+            ToggleProperty(fromCam.FirstPersonPosOffsetX, toCam.FirstPersonPosOffsetX);
+            ToggleProperty(fromCam.FirstPersonPosOffsetY, toCam.FirstPersonPosOffsetY);
+            ToggleProperty(fromCam.FirstPersonPosOffsetZ, toCam.FirstPersonPosOffsetZ);
+            ToggleProperty(fromCam.FirstPersonRotOffsetX, toCam.FirstPersonRotOffsetX);
+            ToggleProperty(fromCam.FirstPersonRotOffsetY, toCam.FirstPersonRotOffsetY);
+            ToggleProperty(fromCam.FirstPersonRotOffsetZ, toCam.FirstPersonRotOffsetZ);
+            ToggleProperty(fromCam.Cam360ForwardOffset, toCam.Cam360ForwardOffset);
+            ToggleProperty(fromCam.Cam360XTilt, toCam.Cam360XTilt);
+            ToggleProperty(fromCam.Cam360ZTilt, toCam.Cam360ZTilt);
+            ToggleProperty(fromCam.Cam360YTilt, toCam.Cam360YTilt);
+            ToggleProperty(fromCam.Cam360UpOffset, toCam.Cam360UpOffset);
+            ToggleProperty(fromCam.Cam360RightOffset, toCam.Cam360RightOffset);
+            ToggleProperty(fromCam.MultiPlayerNumber, toCam.MultiPlayerNumber);
+            ToggleProperty(fromCam.DisplayMultiPlayerNameInfo, toCam.DisplayMultiPlayerNameInfo);
+            ToggleProperty(fromCam.TransparentWalls, toCam.TransparentWalls);
+            ToggleProperty(fromCam.Avatar, toCam.Avatar);
+            ToggleProperty(fromCam.Debris, toCam.Debris);
+            ToggleProperty(fromCam.HideUi, toCam.HideUi);
 
             fromCam.Changed = true;
             toCam.Changed = true;
