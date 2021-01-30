@@ -45,6 +45,7 @@ namespace Mover
         public ConfigProperty<float> Cam360YTilt = new ConfigProperty<float>("cam360YTilt", 0);
         public ConfigProperty<float> Cam360UpOffset = new ConfigProperty<float>("cam360UpOffset", 2.2f);
         public ConfigProperty<float> Cam360RightOffset = new ConfigProperty<float>("cam360RightOffset", 0);
+        public ConfigProperty<bool> NoodleTrack = new ConfigProperty<bool>("NoodleTrack", false);
         public ConfigProperty<int> ScreenWidth = new ConfigProperty<int>("screenWidth", 1920);
         public ConfigProperty<int> ScreenHeight = new ConfigProperty<int>("screenHeight", 1080);
         public ConfigProperty<int> ScreenPosX = new ConfigProperty<int>("screenPosX", 0);
@@ -57,7 +58,7 @@ namespace Mover
         public ConfigProperty<bool> ForceFirstPersonUpRight = new ConfigProperty<bool>("forceFirstPersonUpRight", false);
         public ConfigProperty<bool> Avatar = new ConfigProperty<bool>("avatar", true);
         public ConfigProperty<string> Debris = new ConfigProperty<string>("HideUI", "link");
-        public ConfigProperty<bool> HideUi = new ConfigProperty<bool>("avatar", false);
+        public ConfigProperty<bool> HideUi = new ConfigProperty<bool>("HideUI", false);
         public ConfigProperty<string> MovementScriptPath = new ConfigProperty<string>("movementScriptPath", "");
         public ConfigProperty<bool> MovementAudioSync = new ConfigProperty<bool>("movementAudioSync", true);
 
@@ -116,6 +117,7 @@ namespace Mover
             Cam360YTilt.LoadFromStr(array);
             Cam360UpOffset.LoadFromStr(array);
             Cam360RightOffset.LoadFromStr(array);
+            NoodleTrack.LoadFromStr(array);
             ScreenWidth.LoadFromStr(array);
             ScreenHeight.LoadFromStr(array);
             ScreenPosX.LoadFromStr(array);
@@ -195,6 +197,7 @@ namespace Mover
             linesToWrite.Add(Cam360YTilt.GetSaveStr());
             linesToWrite.Add(Cam360UpOffset.GetSaveStr());
             linesToWrite.Add(Cam360RightOffset.GetSaveStr());
+            linesToWrite.Add(NoodleTrack.GetSaveStr());
             linesToWrite.Add(ScreenWidth.GetSaveStr());
             linesToWrite.Add(ScreenHeight.GetSaveStr());
             linesToWrite.Add(ScreenPosX.GetSaveStr());
