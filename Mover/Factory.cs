@@ -256,11 +256,11 @@ namespace Mover
                     _logger.Log($"unrecognised command: {command}");
                     return;
             }
-
+            /*
             GetFromView(View.FirstPerson).Avatar.Value = false;
             GetFromView(View.Back).Avatar.Value = true;
             GetFromView(View.Front).Avatar.Value = true;
-            
+            */
             SaveAllCams();
         }
         
@@ -329,7 +329,7 @@ namespace Mover
 
         private static void ToggleProperty<T>(ConfigProperty<T> from, ConfigProperty<T> to)
         {
-            var tmp = from.Value;
+            T tmp = from.Value;
             from.Value = to.Value;
             to.Value = tmp;
         }

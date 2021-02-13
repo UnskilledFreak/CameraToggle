@@ -16,6 +16,7 @@ namespace Mover
         public bool Changed { get; set; }
         public readonly View View;
 
+
         public ConfigProperty<bool> LockScreen = new ConfigProperty<bool>("LockScreen", true);
         public ConfigProperty<float> Fov = new ConfigProperty<float>("fov", 90);
         public ConfigProperty<int> AntiAliasing = new ConfigProperty<int>("antiAliasing", 2);
@@ -57,7 +58,7 @@ namespace Mover
         public ConfigProperty<bool> TransparentWalls = new ConfigProperty<bool>("transparentWalls", true);
         public ConfigProperty<bool> ForceFirstPersonUpRight = new ConfigProperty<bool>("forceFirstPersonUpRight", false);
         public ConfigProperty<bool> Avatar = new ConfigProperty<bool>("avatar", true);
-        public ConfigProperty<string> Debris = new ConfigProperty<string>("HideUI", "link");
+        public ConfigProperty<string> Debris = new ConfigProperty<string>("debri", "link");
         public ConfigProperty<bool> HideUi = new ConfigProperty<bool>("HideUI", false);
         public ConfigProperty<string> MovementScriptPath = new ConfigProperty<string>("movementScriptPath", "");
         public ConfigProperty<bool> MovementAudioSync = new ConfigProperty<bool>("movementAudioSync", true);
